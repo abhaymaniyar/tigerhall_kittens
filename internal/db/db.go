@@ -10,9 +10,11 @@ import (
 var db *gorm.DB
 
 func ConnectAndMigrate() *gorm.DB {
+	var err error
+
 	// TODO: use env variables instead of hard coded strings
 	dsn := "host=localhost user=abhay dbname=tigerhall_kittens sslmode=disable password=rootroot"
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatalf("Failed to connect to db: %v", err)
 	}

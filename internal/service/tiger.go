@@ -7,7 +7,7 @@ import (
 
 type TigerService interface {
 	CreateTiger(tiger *model.Tiger) error
-	ListTigers() ([]*model.Tiger, error)
+	ListTigers() (*[]model.Tiger, error)
 }
 
 type tigerService struct {
@@ -28,7 +28,7 @@ func (t *tigerService) CreateTiger(tiger *model.Tiger) error {
 	return nil
 }
 
-func (t *tigerService) ListTigers() ([]*model.Tiger, error) {
+func (t *tigerService) ListTigers() (*[]model.Tiger, error) {
 	tigers, err := t.tigerRepo.GetTigers()
 	if err != nil {
 		// TODO: add error reporting and logging

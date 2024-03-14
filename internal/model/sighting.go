@@ -1,10 +1,14 @@
 package model
 
-import "time"
+import (
+	"github.com/google/uuid"
+	"time"
+)
 
 type Sighting struct {
+	ID               uint `gorm:"primarykey"`
 	TigerID          uint
-	ReportedByUserID uint
+	ReportedByUserID uuid.UUID
 	Lat              float64
 	Lon              float64
 	Timestamp        time.Time

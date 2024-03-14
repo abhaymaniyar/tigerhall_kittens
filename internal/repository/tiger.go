@@ -8,7 +8,7 @@ import (
 
 type TigerRepo interface {
 	SaveTiger(tiger *model.Tiger) error
-	GetTigers() ([]*model.Tiger, error)
+	GetTigers() (*[]model.Tiger, error)
 }
 
 type tigerRepo struct {
@@ -23,10 +23,11 @@ func (t *tigerRepo) SaveTiger(tiger *model.Tiger) error {
 	return t.DB.Create(tiger).Error
 }
 
-func (t *tigerRepo) GetTigers() ([]*model.Tiger, error) {
-	var tigers []*model.Tiger
+func (t *tigerRepo) GetTigers() (*[]model.Tiger, error) {
+	var tigers *[]model.Tiger
 
-	queryErr := t.DB.Find(tigers).Order("lastSeenTimestamp desc").Error
+	queryErr := t.DB.Order("last_seen_timestamp desc").Find(&tigers).Error
+
 	if queryErr != nil {
 		return nil, queryErr
 	}

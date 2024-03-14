@@ -36,6 +36,7 @@ func (t *tigerHandler) CreateTiger() httprouter.Handle {
 			return
 		}
 
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 		json.NewEncoder(w).Encode(tiger)
 	}
@@ -51,6 +52,7 @@ func (t *tigerHandler) ListTigers() httprouter.Handle {
 			return
 		}
 
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 		json.NewEncoder(w).Encode(tigers)
 	}
