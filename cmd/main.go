@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"tigerhall_kittens/internal/db"
 	"tigerhall_kittens/internal/handler"
+	"tigerhall_kittens/internal/handler/middleware"
 )
 
 func main() {
@@ -14,8 +15,8 @@ func main() {
 	router := httprouter.New()
 
 	tigerHandler := handler.NewTigerHandler()
-	router.POST("/api/v1/tigers", tigerHandler.CreateTiger())
-	router.GET("/api/v1/tigers", tigerHandler.ListTigers())
+	router.POST("/api/v1/tigers", middleware.LoggingMiddleware(tigerHandler.CreateTiger()))
+	router.GET("/api/v1/tigers", middleware.LoggingMiddleware(tigerHandler.ListTigers()))
 
 	log.Fatal(http.ListenAndServe(":8082", router))
 }
