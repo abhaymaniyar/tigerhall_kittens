@@ -5,9 +5,14 @@ import (
 	"tigerhall_kittens/internal/repository"
 )
 
+type ListTigersOpts struct {
+	Limit  int
+	Offset int
+}
+
 type TigerService interface {
 	CreateTiger(tiger *model.Tiger) error
-	ListTigers() (*[]model.Tiger, error)
+	ListTigers(opts ListTigersOpts) ([]model.Tiger, error)
 }
 
 type tigerService struct {
@@ -28,8 +33,8 @@ func (t *tigerService) CreateTiger(tiger *model.Tiger) error {
 	return nil
 }
 
-func (t *tigerService) ListTigers() (*[]model.Tiger, error) {
-	tigers, err := t.tigerRepo.GetTigers()
+func (t *tigerService) ListTigers(opts ListTigersOpts) ([]model.Tiger, error) {
+	tigers, err := t.tigerRepo.GetTigers(opts.Offset, opts.Limit)
 	if err != nil {
 		// TODO: add error reporting and logging
 		return nil, err
