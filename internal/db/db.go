@@ -1,31 +1,55 @@
 package db
 
 import (
+	"database/sql"
+	_ "github.com/lib/pq"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"log"
 	"tigerhall_kittens/internal/model"
 )
 
 var db *gorm.DB
 
-func ConnectAndMigrate() *gorm.DB {
+func Connect(dsn string, maxIdleConnections, maxOpenConnections int) error {
 	var err error
+	var gormdb *sql.DB
 
-	// TODO: use env variables instead of hard coded strings
-	dsn := "host=localhost user=abhay dbname=tigerhall_kittens sslmode=disable password=rootroot"
 	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		log.Fatalf("Failed to connect to db: %v", err)
+		return err
 	}
 
 	// Run migrations
 	// TODO: use a better db migration tool, ex: goose
-	db.AutoMigrate(&model.User{}, &model.Tiger{}, &model.Sighting{})
+	err = db.AutoMigrate(&model.User{}, &model.Tiger{}, &model.Sighting{})
+	if err != nil {
+		return err
+	}
 
-	return db
+	gormdb, err = db.DB()
+	if err != nil {
+		return err
+	}
+
+	err = gormdb.Ping()
+	if err != nil {
+		return err
+	}
+
+	//gormdb
+	//db.LogMode(false)
+	gormdb.SetMaxIdleConns(maxIdleConnections)
+	gormdb.SetMaxOpenConns(maxOpenConnections)
+
+	return nil
 }
 
 func Get() *gorm.DB {
 	return db
+}
+
+// Close closes the database
+func Close() {
+	sqldb, _ := db.DB()
+	_ = sqldb.Close()
 }

@@ -22,28 +22,6 @@ const (
 	FATAL   = 4
 )
 
-func SetupLogger(env string) {
-	//switch env {
-	//case EnvDevelopment:
-	//	logger.Init(logger.DEBUG)
-	//case EnvTest:
-	//	logger.Init(logger.DEBUG)
-	//case EnvStaging, EnvQualityAssurance, EnvT1Dev, EnvT2Dev:
-	//	logger.Init(logger.INFO)
-	//	fallthrough
-	//case EnvUnicorn:
-	//	logger.Init(logger.INFO)
-	//	fallthrough
-	//case EnvSandbox:
-	//	logger.Init(logger.DEBUG)
-	//	fallthrough
-	//case EnvProduction:
-	//	logger.Init(logger.INFO)
-	//	logger.InitSentry(env, Env.SentryDSN)
-	//}
-	Init(0)
-}
-
 func Init(mode int) {
 	var logLevel zapcore.Level
 	switch mode {
@@ -99,16 +77,8 @@ func Init(mode int) {
 func addFieldsFromContext(ctx context.Context, fields ...zapcore.Field) []zapcore.Field {
 	if ctx != nil {
 		keyMapping := map[shared.ContextKey]string{
-			shared.CtxValueRequestId:         "reqId",
-			shared.CtxValueCartSessionKey:    "reqCartSessionToken",
-			shared.CtxValuePaymentOrderToken: "reqPaymentOrderToken",
-			shared.CtxValueOmsOrderId:        "oms_order_id",
-			shared.UserIDKey:                 "reqUserId",
-			shared.DeviceIDKey:               "reqDeviceId",
-			shared.CtxPathURL:                "reqURL",
-			shared.CtxValueEventType:         "eventType",
-			shared.CtxValueEventTypeStep:     "eventTypeStep",
-			shared.CtxValueMerchantDomain:    "merchantDomain",
+			shared.CtxValueRequestId: "reqId",
+			shared.CtxPathURL:        "reqURL",
 		}
 		for contextKey, loggerFieldKey := range keyMapping {
 			if value, ok := ctx.Value(contextKey).(string); ok {
@@ -142,12 +112,6 @@ func E(ctx context.Context, err error, message string, fields ...zapcore.Field) 
 
 	//NotifySentry(ctx, err, message, fields)
 
-}
-
-func EWithNewRelic(ctx context.Context, err error, message string, fields ...zapcore.Field) {
-	fields = append(fields, Field("error", err))
-	fields = addFieldsFromContext(ctx, fields...)
-	//withAlertingOption(ctx, err, message, &AlertOptions{NEWRELIC, ERROR}, fields...)
 }
 
 func Sync() {
