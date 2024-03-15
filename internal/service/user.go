@@ -31,7 +31,7 @@ func NewUserService() UserService {
 }
 
 func (t *userService) CreateUser(ctx context.Context, createUserReq CreateUserReq) error {
-	user, err := t.userRepo.GetUser(repository.GetUserOpts{Email: createUserReq.Email})
+	user, err := t.userRepo.GetUser(ctx, repository.GetUserOpts{Email: createUserReq.Email})
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		logger.W(ctx, "Error while checking existing users", logger.Field("email", createUserReq.Email))
 		return err
@@ -57,7 +57,7 @@ func (t *userService) CreateUser(ctx context.Context, createUserReq CreateUserRe
 
 	user.Password = string(hashedPassword)
 
-	if err := t.userRepo.CreateUser(user); err != nil {
+	if err := t.userRepo.CreateUser(ctx, user); err != nil {
 		logger.E(ctx, err, "Failed to create user")
 		return err
 	}

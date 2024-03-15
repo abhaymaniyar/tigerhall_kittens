@@ -21,7 +21,7 @@ func NewTigerService() TigerService {
 }
 
 func (t *tigerService) CreateTiger(ctx context.Context, tiger *model.Tiger) error {
-	err := t.tigerRepo.SaveTiger(tiger)
+	err := t.tigerRepo.SaveTiger(ctx, tiger)
 	if err != nil {
 		logger.E(ctx, err, "Error while saving tiger", logger.Field("tiger_id", tiger.ID))
 		return err
@@ -31,7 +31,7 @@ func (t *tigerService) CreateTiger(ctx context.Context, tiger *model.Tiger) erro
 }
 
 func (t *tigerService) ListTigers(ctx context.Context, opts repository.ListTigersOpts) ([]model.Tiger, error) {
-	tigers, err := t.tigerRepo.GetTigers(opts)
+	tigers, err := t.tigerRepo.GetTigers(ctx, opts)
 	if err != nil {
 		logger.E(ctx, err, "Error while fetching tigers", logger.Field("opts", opts))
 		return nil, err

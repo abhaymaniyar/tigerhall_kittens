@@ -45,7 +45,7 @@ func (e *sightingEmailNotifier) ReportSightingToAllUsers(ctx context.Context, ti
 		TigerID: tigerID,
 	}
 
-	sightings, err := e.sightingRepo.GetSightings(repository.GetSightingOpts{
+	sightings, err := e.sightingRepo.GetSightings(ctx, repository.GetSightingOpts{
 		TigerID: tigerID,
 	})
 

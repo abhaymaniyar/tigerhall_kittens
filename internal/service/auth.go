@@ -43,7 +43,7 @@ func NewAuthService() AuthService {
 }
 
 func (t *userService) LoginUser(ctx context.Context, req LoginUserReq) (*LoginUserResponse, error) {
-	user, err := t.userRepo.GetUser(repository.GetUserOpts{Username: req.Username})
+	user, err := t.userRepo.GetUser(ctx, repository.GetUserOpts{Username: req.Username})
 
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		logger.W(ctx, "User does not exist", logger.Field("username", req.Username))

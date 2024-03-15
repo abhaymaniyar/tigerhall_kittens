@@ -39,7 +39,7 @@ func NewSightingService() SightingService {
 }
 
 func (t *sightingService) ReportSighting(ctx context.Context, reportSightingReq ReportSightingReq) error {
-	count, err := t.sightingRepo.GetSightingsCountInRange(repository.GetSightingOpts{
+	count, err := t.sightingRepo.GetSightingsCountInRange(ctx, repository.GetSightingOpts{
 		TigerID:       reportSightingReq.TigerID,
 		Lat:           reportSightingReq.Lat,
 		Lon:           reportSightingReq.Lon,
@@ -72,7 +72,7 @@ func (t *sightingService) ReportSighting(ctx context.Context, reportSightingReq 
 		ImageURL:         reportSightingReq.ImageURL,
 	}
 
-	if err := t.sightingRepo.ReportSighting(sighting); err != nil {
+	if err := t.sightingRepo.ReportSighting(ctx, sighting); err != nil {
 		logger.E(ctx, err, "Failed to create reportSightingReq")
 		return err
 	}
@@ -87,7 +87,7 @@ func (t *sightingService) ReportSighting(ctx context.Context, reportSightingReq 
 }
 
 func (t *sightingService) GetSightings(ctx context.Context, opts repository.GetSightingOpts) (*[]model.Sighting, error) {
-	sightings, err := t.sightingRepo.GetSightings(opts)
+	sightings, err := t.sightingRepo.GetSightings(ctx, opts)
 
 	if err != nil {
 		logger.E(ctx, err, "Error while fetching sightings", logger.Field("opts", opts))

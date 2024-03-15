@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"context"
 	"gorm.io/gorm"
 	"tigerhall_kittens/internal/db"
 	"tigerhall_kittens/internal/logger"
@@ -13,8 +14,8 @@ type GetUserOpts struct {
 }
 
 type UserRepo interface {
-	CreateUser(user *model.User) error
-	GetUser(opts GetUserOpts) (*model.User, error)
+	CreateUser(ctx context.Context, user *model.User) error
+	GetUser(ctx context.Context, opts GetUserOpts) (*model.User, error)
 }
 
 type userRepo struct {
@@ -25,11 +26,17 @@ func NewUserRepo() UserRepo {
 	return &userRepo{DB: db.Get()}
 }
 
-func (t *userRepo) CreateUser(user *model.User) error {
-	return t.DB.Create(user).Error
+func (t *userRepo) CreateUser(ctx context.Context, user *model.User) error {
+	err := t.DB.Create(user).Error
+	if err != nil {
+		logger.E(ctx, err, "Error while creating user")
+		return err
+	}
+
+	return nil
 }
 
-func (t *userRepo) GetUser(opts GetUserOpts) (*model.User, error) {
+func (t *userRepo) GetUser(ctx context.Context, opts GetUserOpts) (*model.User, error) {
 	var user model.User
 
 	conditions := &model.User{}
@@ -43,7 +50,7 @@ func (t *userRepo) GetUser(opts GetUserOpts) (*model.User, error) {
 
 	err := t.DB.Where(conditions).First(&user).Error
 	if err != nil {
-		logger.E(nil, err, "Error while fetching user")
+		logger.E(ctx, err, "Error while fetching user")
 		return nil, err
 	}
 
