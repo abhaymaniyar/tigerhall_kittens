@@ -32,7 +32,7 @@ func NewUserService() UserService {
 }
 
 func (t *userService) CreateUser(createUserReq CreateUserReq) error {
-	user, err := t.userRepo.GetUser(repository.GetUserOpts{Email: createUserReq.Email})
+	user, err := t.userRepo.ListSightings(repository.GetUserOpts{Email: createUserReq.Email})
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		logger.W(nil, "Error while checking existing users", logger.Field("email", createUserReq.Email))
 		return err

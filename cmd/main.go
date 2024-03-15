@@ -27,5 +27,8 @@ func main() {
 	userHandler := handler.NewUserHandler()
 	router.POST("/api/v1/users", middleware.AuthMiddleware(middleware.LoggingMiddleware(userHandler.CreateUser())))
 
+	sightingHandler := handler.NewSightingHandler()
+	router.POST("/api/v1/sightings", middleware.AuthMiddleware(middleware.LoggingMiddleware(sightingHandler.ReportSighting())))
+
 	log.Fatal(http.ListenAndServe(":8082", router))
 }

@@ -14,7 +14,7 @@ type GetUserOpts struct {
 
 type UserRepo interface {
 	CreateUser(user *model.User) error
-	GetUser(opts GetUserOpts) (*model.User, error)
+	ListSightings(opts GetUserOpts) (*model.User, error)
 }
 
 type userRepo struct {
@@ -29,7 +29,7 @@ func (t *userRepo) CreateUser(user *model.User) error {
 	return t.DB.Create(user).Error
 }
 
-func (t *userRepo) GetUser(opts GetUserOpts) (*model.User, error) {
+func (t *userRepo) ListSightings(opts GetUserOpts) (*model.User, error) {
 	var user model.User
 	err := t.DB.Where(&model.User{Email: opts.Email}).First(&user).Error
 	if err != nil {
