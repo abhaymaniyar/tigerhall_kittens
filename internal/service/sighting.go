@@ -6,6 +6,7 @@ import (
 	"tigerhall_kittens/internal/logger"
 	"tigerhall_kittens/internal/model"
 	"tigerhall_kittens/internal/repository"
+	"time"
 )
 
 const DEFAULT_SIGHTING_RANGE_IN_METERS = 5000
@@ -21,6 +22,7 @@ type ReportSightingReq struct {
 
 type SightingService interface {
 	ReportSighting(user ReportSightingReq) error
+	GetSightings(opts repository.GetSightingOpts) (*[]model.Sighting, error)
 }
 
 type sightingService struct {
@@ -49,14 +51,16 @@ func (t *sightingService) ReportSighting(reportSightingReq ReportSightingReq) er
 		return errors.New("sighting already exists in range")
 	}
 
+	sightingTs, err := time.Parse(time.RFC3339, reportSightingReq.Timestamp)
+
 	sighting := &model.Sighting{
 		TigerID: reportSightingReq.TigerID,
 		// TODO: get user id either from access token or from request
 		ReportedByUserID: uuid.MustParse("29c1fac8-a1e6-4859-95b9-3d7c0425b70c"),
 		Lat:              reportSightingReq.Lat,
 		Lon:              reportSightingReq.Lon,
-		//Timestamp:        reportSightingReq.Timestamp,
-		ImageURL: reportSightingReq.ImageURL,
+		Timestamp:        sightingTs,
+		ImageURL:         reportSightingReq.ImageURL,
 	}
 
 	if err := t.sightingRepo.ReportSighting(sighting); err != nil {
@@ -66,4 +70,15 @@ func (t *sightingService) ReportSighting(reportSightingReq ReportSightingReq) er
 	}
 
 	return nil
+}
+
+func (t *sightingService) GetSightings(opts repository.GetSightingOpts) (*[]model.Sighting, error) {
+	sightings, err := t.sightingRepo.GetSightings(opts)
+
+	if err != nil {
+		// TODO: add error reporting and logging
+		return nil, err
+	}
+
+	return sightings, nil
 }

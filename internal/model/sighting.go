@@ -13,6 +13,6 @@ type Sighting struct {
 	Lon              float64
 	Timestamp        time.Time
 	ImageURL         string
-	Tiger            Tiger `gorm:"foreignKey:TigerID"`
-	ReportedByUser   User  `gorm:"foreignKey:ReportedByUserID"`
+	Tiger            Tiger `gorm:"foreignKey:TigerID" json:"-"`
+	ReportedByUser   User  `gorm:"foreignKey:ReportedByUserID" json:"-"`
 }

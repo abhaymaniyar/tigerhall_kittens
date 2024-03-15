@@ -7,22 +7,19 @@ import (
 	"tigerhall_kittens/internal/model"
 )
 
-type ListSightingOpts struct {
-	Username string
-	Email    string
-}
-
 type GetSightingOpts struct {
 	TigerID       uint
 	Lat           float64
 	Lon           float64
 	RangeInMeters uint
+	Limit         int
+	Offset        int
 }
 
 type SightingRepo interface {
 	ReportSighting(user *model.Sighting) error
 	GetSightingsCountInRange(opts GetSightingOpts) (int64, error)
-	ListSightings(opts GetUserOpts) (*[]model.Sighting, error)
+	GetSightings(opts GetSightingOpts) (*[]model.Sighting, error)
 }
 
 type sightingRepo struct {
@@ -51,13 +48,13 @@ func (t *sightingRepo) GetSightingsCountInRange(opts GetSightingOpts) (int64, er
 	return count, nil
 }
 
-func (t *sightingRepo) ListSightings(opts GetUserOpts) (*[]model.Sighting, error) {
-	var user *[]model.Sighting
-	err := t.DB.Where(&model.User{Email: opts.Email}).First(&user).Error
+func (t *sightingRepo) GetSightings(opts GetSightingOpts) (*[]model.Sighting, error) {
+	var sightings *[]model.Sighting
+	err := t.DB.Order("timestamp desc").Where(&model.Sighting{TigerID: opts.TigerID}).Find(&sightings).Offset(opts.Offset).Limit(opts.Limit).Error
 	if err != nil {
-		logger.E(nil, err, "Error while fetching user")
+		logger.E(nil, err, "Error while fetching sightings")
 		return nil, err
 	}
 
-	return nil, nil
+	return sightings, nil
 }

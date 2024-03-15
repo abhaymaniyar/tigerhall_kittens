@@ -29,6 +29,7 @@ func main() {
 
 	sightingHandler := handler.NewSightingHandler()
 	router.POST("/api/v1/sightings", middleware.AuthMiddleware(middleware.LoggingMiddleware(sightingHandler.ReportSighting())))
+	router.GET("/api/v1/tigers/:tiger_id/sightings", middleware.AuthMiddleware(middleware.LoggingMiddleware(sightingHandler.GetSightings())))
 
 	log.Fatal(http.ListenAndServe(":8082", router))
 }
