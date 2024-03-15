@@ -50,7 +50,7 @@ func (t *sightingRepo) GetSightingsCountInRange(opts GetSightingOpts) (int64, er
 
 func (t *sightingRepo) GetSightings(opts GetSightingOpts) (*[]model.Sighting, error) {
 	var sightings *[]model.Sighting
-	err := t.DB.Order("timestamp desc").Where(&model.Sighting{TigerID: opts.TigerID}).Find(&sightings).Offset(opts.Offset).Limit(opts.Limit).Error
+	err := t.DB.Limit(opts.Limit).Offset(opts.Offset).Order("timestamp desc").Where(&model.Sighting{TigerID: opts.TigerID}).Find(&sightings).Error
 	if err != nil {
 		logger.E(nil, err, "Error while fetching sightings")
 		return nil, err

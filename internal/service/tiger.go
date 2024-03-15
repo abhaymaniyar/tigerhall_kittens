@@ -7,14 +7,9 @@ import (
 	"tigerhall_kittens/internal/repository"
 )
 
-type ListTigersOpts struct {
-	Limit  int
-	Offset int
-}
-
 type TigerService interface {
 	CreateTiger(ctx context.Context, tiger *model.Tiger) error
-	ListTigers(ctx context.Context, opts ListTigersOpts) ([]model.Tiger, error)
+	ListTigers(ctx context.Context, opts repository.ListTigersOpts) ([]model.Tiger, error)
 }
 
 type tigerService struct {
@@ -35,8 +30,8 @@ func (t *tigerService) CreateTiger(ctx context.Context, tiger *model.Tiger) erro
 	return nil
 }
 
-func (t *tigerService) ListTigers(ctx context.Context, opts ListTigersOpts) ([]model.Tiger, error) {
-	tigers, err := t.tigerRepo.GetTigers(opts.Offset, opts.Limit)
+func (t *tigerService) ListTigers(ctx context.Context, opts repository.ListTigersOpts) ([]model.Tiger, error) {
+	tigers, err := t.tigerRepo.GetTigers(opts)
 	if err != nil {
 		logger.E(ctx, err, "Error while fetching tigers", logger.Field("opts", opts))
 		return nil, err
