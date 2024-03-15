@@ -12,6 +12,7 @@ func Init(router *httprouter.Router) {
 		_, _ = fmt.Fprint(w, "{ \"message\":\"Hello world!. I am tigerhall_kittens.\",\"success\":true,\"api_version\": 1 }")
 	})
 
+	RegisterAuthRoutes(router)
 	RegisterUserRoutes(router)
 	RegisterTigerRoutes(router)
 	RegisterSightingRoutes(router)

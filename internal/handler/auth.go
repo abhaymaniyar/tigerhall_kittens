@@ -13,11 +13,11 @@ type AuthHandler interface {
 }
 
 type authHandler struct {
-	authService service.UserService
+	authService service.AuthService
 }
 
 func NewAuthHandler() AuthHandler {
-	return &authHandler{authService: service.NewUserService()}
+	return &authHandler{authService: service.NewAuthService()}
 }
 
 // Login creates a new user
