@@ -46,7 +46,6 @@ func (t *tigerHandler) CreateTiger() httprouter.Handle {
 
 func (t *tigerHandler) ListTigers() httprouter.Handle {
 	return func(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
-		// TODO: add pagination support
 		pageStr := r.URL.Query().Get("page")
 		perPageStr := r.URL.Query().Get("per_page")
 

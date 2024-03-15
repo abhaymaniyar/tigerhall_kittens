@@ -52,7 +52,6 @@ func (h *sightingHandler) GetSightings() httprouter.Handle {
 		// TODO: validation
 		tigerID, _ := strconv.ParseUint(tigerIDStr, 10, 0)
 
-		// TODO: add pagination support
 		pageStr := r.URL.Query().Get("page")
 		perPageStr := r.URL.Query().Get("per_page")
 
