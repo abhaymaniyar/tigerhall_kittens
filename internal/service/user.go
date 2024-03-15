@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"errors"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
@@ -11,8 +12,6 @@ import (
 	"time"
 )
 
-// User represents a user entity
-// TODO:
 type CreateUserReq struct {
 	Username string `json:"username"`
 	Password string `json:"-"`
@@ -20,7 +19,7 @@ type CreateUserReq struct {
 }
 
 type UserService interface {
-	CreateUser(user CreateUserReq) error
+	CreateUser(ctx context.Context, user CreateUserReq) error
 }
 
 type userService struct {
@@ -31,15 +30,15 @@ func NewUserService() UserService {
 	return &userService{userRepo: repository.NewUserRepo()}
 }
 
-func (t *userService) CreateUser(createUserReq CreateUserReq) error {
+func (t *userService) CreateUser(ctx context.Context, createUserReq CreateUserReq) error {
 	user, err := t.userRepo.GetUser(repository.GetUserOpts{Email: createUserReq.Email})
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		logger.W(nil, "Error while checking existing users", logger.Field("email", createUserReq.Email))
+		logger.W(ctx, "Error while checking existing users", logger.Field("email", createUserReq.Email))
 		return err
 	}
 
 	if user != nil {
-		logger.D(nil, "User already exists", logger.Field("email", createUserReq.Email))
+		logger.D(ctx, "User already exists", logger.Field("email", createUserReq.Email))
 		return errors.New("user already exists")
 	}
 
@@ -52,15 +51,14 @@ func (t *userService) CreateUser(createUserReq CreateUserReq) error {
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(createUserReq.Password), bcrypt.DefaultCost)
 	if err != nil {
-		logger.E(nil, err, "Failed to hash password")
+		logger.E(ctx, err, "Failed to hash password")
 		return err
 	}
 
 	user.Password = string(hashedPassword)
 
 	if err := t.userRepo.CreateUser(user); err != nil {
-		// TODO: add error reporting and logging
-		logger.E(nil, err, "Failed to create user")
+		logger.E(ctx, err, "Failed to create user")
 		return err
 	}
 

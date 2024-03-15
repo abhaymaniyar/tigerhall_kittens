@@ -29,7 +29,7 @@ func (h *userHandler) CreateUser() httprouter.Handle {
 			return
 		}
 
-		err := h.userService.CreateUser(user)
+		err := h.userService.CreateUser(r.Context(), user)
 		if err != nil {
 			// TODO: dont generalize the errors to be 400 here
 			http.Error(w, fmt.Sprintf("Error while creating user: %s", err.Error()), http.StatusBadRequest)

@@ -11,7 +11,6 @@ import (
 
 func AuthMiddleware(next httprouter.Handle) httprouter.Handle {
 	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-		// TODO: uncomment this later
 		authHeader := r.Header.Get("Authorization")
 		if authHeader == "" {
 			http.Error(w, "Unauthorized: Missing authorization header", http.StatusUnauthorized)

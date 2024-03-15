@@ -13,40 +13,22 @@ import (
 )
 
 const (
-	EnvDevelopment      = "development"
-	EnvTest             = "test"
-	EnvStaging          = "staging"
-	EnvUnicorn          = "unicorn"
-	EnvSandbox          = "sandbox"
-	EnvProduction       = "production"
-	EnvQualityAssurance = "qa"
-	EnvT1Dev            = "t1dev"
-	EnvT2Dev            = "t2dev"
+	EnvDevelopment = "development"
+	EnvStaging     = "staging"
+	EnvProduction  = "production"
 )
 
 var Env Config
 
 type Config struct {
-	Environment              string `mapstructure:"ENV"`
-	Port                     string `mapstructure:"PORT"`
-	DatabaseHost             string `mapstructure:"DATABASE_HOST"`
-	DatabaseUser             string `mapstructure:"DATABASE_USER"`
-	DatabaseName             string `mapstructure:"DATABASE_NAME"`
-	DatabasePassword         string `mapstructure:"DATABASE_PASSWORD"`
-	DatabaseMinConnections   string `mapstructure:"DB_MIN_CONNECTIONS"`
-	DatabaseMaxConnections   string `mapstructure:"DB_MAX_CONNECTIONS"`
-	EventPublisherURL        string `mapstructure:"EVENT_PUBLISHER_URL"`
-	RedisHost                string `mapstructure:"REDIS_HOST"`
-	RedisDB                  string `mapstructure:"REDIS_DB"`
-	KafkaUserName            string `mapstructure:"KAFKA_USERNAME"`
-	KafkaBrokerList          string `mapstructure:"KAFKA_BROKER_LIST"`
-	KafkaConsumerGroupID     string `mapstructure:"KAFKA_CONSUMER_GROUP_ID"`
-	KafkaBatchSize           int    `mapstructure:"KAFKA_BATCH_SIZE"`
-	KafkaTopicGrowthEvents   string `mapstructure:"KAFKA_TOPIC_GROWTH_EVENTS"`
-	KafkaTopicCheckoutEvents string `mapstructure:"KAFKA_TOPIC_CHECKOUT_EVENTS"`
-	KafkaTopicShopifyEvents  string `mapstructure:"KAFKA_TOPIC_SHOPIFY_EVENTS"`
-	KafkaTopicOmsEvents      string `mapstructure:"KAFKA_TOPIC_OMS_EVENTS"`
-	SentryDSN                string `mapstructure:"SENTRY_DSN"`
+	Environment            string `mapstructure:"ENV"`
+	Port                   string `mapstructure:"PORT"`
+	DatabaseHost           string `mapstructure:"DATABASE_HOST"`
+	DatabaseUser           string `mapstructure:"DATABASE_USER"`
+	DatabaseName           string `mapstructure:"DATABASE_NAME"`
+	DatabasePassword       string `mapstructure:"DATABASE_PASSWORD"`
+	DatabaseMinConnections string `mapstructure:"DB_MIN_CONNECTIONS"`
+	DatabaseMaxConnections string `mapstructure:"DB_MAX_CONNECTIONS"`
 }
 
 func bindEnvs(iface interface{}, parts ...string) {
@@ -113,18 +95,7 @@ func SetupLogger(env string) {
 	switch env {
 	case EnvDevelopment:
 		logger.Init(logger.DEBUG)
-	case EnvTest:
-		logger.Init(logger.DEBUG)
-	case EnvStaging:
-		logger.Init(logger.INFO)
-		fallthrough
-	case EnvUnicorn:
-		logger.Init(logger.INFO)
-		fallthrough
-	case EnvSandbox:
-		logger.Init(logger.DEBUG)
-		fallthrough
-	case EnvProduction:
+	case EnvStaging, EnvProduction:
 		logger.Init(logger.INFO)
 	}
 }

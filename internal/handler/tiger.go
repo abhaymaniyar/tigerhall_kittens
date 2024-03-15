@@ -30,7 +30,7 @@ func (t *tigerHandler) CreateTiger() httprouter.Handle {
 			return
 		}
 
-		err := t.tigerService.CreateTiger(&tiger)
+		err := t.tigerService.CreateTiger(r.Context(), &tiger)
 		if err != nil {
 			//	TODO: report error and make it more descriptive
 			http.Error(w, err.Error(), http.StatusBadRequest)
@@ -63,7 +63,7 @@ func (t *tigerHandler) ListTigers() httprouter.Handle {
 
 		offset := (page - 1) * perPage
 
-		tigers, err := t.tigerService.ListTigers(service.ListTigersOpts{Limit: perPage, Offset: offset})
+		tigers, err := t.tigerService.ListTigers(r.Context(), service.ListTigersOpts{Limit: perPage, Offset: offset})
 		if err != nil {
 			//	TODO: report error and make it more descriptive
 			http.Error(w, err.Error(), http.StatusBadRequest)

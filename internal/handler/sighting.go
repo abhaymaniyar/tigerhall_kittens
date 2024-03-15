@@ -70,7 +70,7 @@ func (h *sightingHandler) GetSightings() httprouter.Handle {
 
 		offset := (page - 1) * perPage
 
-		sightings, err := h.sightingService.GetSightings(repository.GetSightingOpts{
+		sightings, err := h.sightingService.GetSightings(r.Context(), repository.GetSightingOpts{
 			TigerID: uint(tigerID),
 			Limit:   perPage,
 			Offset:  offset,

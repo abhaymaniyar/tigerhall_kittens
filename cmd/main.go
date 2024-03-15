@@ -27,19 +27,16 @@ func main() {
 		panic(err)
 	}
 
-	// TODO: fix logger
 	config.SetupLogger(config.Env.Environment)
 
-	// TODO: create a db init
 	config.SetupDBConnection(context.Background())
 
-	// TODO: create a router file
 	router := httprouter.New()
 	routes.Init(router)
 
 	go notification_worker.SetupNotificationWorker()
 
-	log.Fatal(http.ListenAndServe(":8082", router))
+	log.Fatal(http.ListenAndServe(config.Env.Port, router))
 }
 
 func handlePanic(ctx context.Context, cancel context.CancelFunc) {

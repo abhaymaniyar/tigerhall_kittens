@@ -13,7 +13,6 @@ import (
 
 const DEFAULT_SIGHTING_RANGE_IN_METERS = 5000
 
-// TODO:
 type ReportSightingReq struct {
 	TigerID   uint    `json:"tiger_id"`
 	Lat       float64 `json:"lat"`
@@ -24,7 +23,7 @@ type ReportSightingReq struct {
 
 type SightingService interface {
 	ReportSighting(ctx context.Context, user ReportSightingReq) error
-	GetSightings(opts repository.GetSightingOpts) (*[]model.Sighting, error)
+	GetSightings(ctx context.Context, opts repository.GetSightingOpts) (*[]model.Sighting, error)
 }
 
 type sightingService struct {
@@ -48,19 +47,19 @@ func (t *sightingService) ReportSighting(ctx context.Context, reportSightingReq 
 	})
 
 	if err != nil {
-		logger.E(nil, err, "Error while checking existing sightings", logger.Field("tiger_id", reportSightingReq.TigerID))
+		logger.E(ctx, err, "Error while checking existing sightings", logger.Field("tiger_id", reportSightingReq.TigerID))
 		return errors.New("error while checking existing sightings")
 	}
 
 	if count > 0 {
-		logger.I(nil, "A sighting of the same tiger within 5 kilometers already exists", logger.Field("tiger_id", reportSightingReq.TigerID))
+		logger.I(ctx, "A sighting of the same tiger within 5 kilometers already exists", logger.Field("tiger_id", reportSightingReq.TigerID))
 		return errors.New("sighting already exists in range")
 	}
 
 	sightingTs, err := time.Parse(time.RFC3339, reportSightingReq.Timestamp)
 	userID, parseErr := uuid.Parse(ctx.Value("userID").(string))
 	if parseErr != nil {
-		logger.E(nil, err, "Error while fetching user id from context")
+		logger.E(ctx, err, "Error while fetching user id from context")
 		return errors.New("error while fetching user id from context")
 	}
 
@@ -74,25 +73,24 @@ func (t *sightingService) ReportSighting(ctx context.Context, reportSightingReq 
 	}
 
 	if err := t.sightingRepo.ReportSighting(sighting); err != nil {
-		// TODO: add error reporting and logging
-		logger.E(nil, err, "Failed to create reportSightingReq")
+		logger.E(ctx, err, "Failed to create reportSightingReq")
 		return err
 	}
 
 	err = t.sightingEmailNotifer.ReportSightingToAllUsers(ctx, reportSightingReq.TigerID)
 	if err != nil {
-		logger.E(nil, err, "Error while sending email notification for sightings", logger.Field("tiger_id", reportSightingReq.TigerID), logger.Field("user_id", userID))
+		logger.E(ctx, err, "Error while sending email notification for sightings", logger.Field("tiger_id", reportSightingReq.TigerID), logger.Field("user_id", userID))
 		return errors.New("error while checking existing sightings")
 	}
 
 	return nil
 }
 
-func (t *sightingService) GetSightings(opts repository.GetSightingOpts) (*[]model.Sighting, error) {
+func (t *sightingService) GetSightings(ctx context.Context, opts repository.GetSightingOpts) (*[]model.Sighting, error) {
 	sightings, err := t.sightingRepo.GetSightings(opts)
 
 	if err != nil {
-		// TODO: add error reporting and logging
+		logger.E(ctx, err, "Error while fetching sightings", logger.Field("opts", opts))
 		return nil, err
 	}
 

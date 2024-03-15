@@ -29,7 +29,7 @@ func (h *authHandler) Login() httprouter.Handle {
 			return
 		}
 
-		loginResp, err := h.authService.LoginUser(user)
+		loginResp, err := h.authService.LoginUser(r.Context(), user)
 		if err != nil {
 			// TODO: dont generalize the errors to be 400 here
 			http.Error(w, fmt.Sprintf("Error while creating user: %s", err.Error()), http.StatusUnauthorized)

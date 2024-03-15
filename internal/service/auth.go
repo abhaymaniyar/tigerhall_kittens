@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"github.com/golang-jwt/jwt/v5"
@@ -30,8 +31,7 @@ type Claims struct {
 var JWTSecretKey = []byte("your_secret_key")
 
 type AuthService interface {
-	CreateUser(user CreateUserReq) error
-	LoginUser(req LoginUserReq) (*LoginUserResponse, error)
+	LoginUser(ctx context.Context, req LoginUserReq) (*LoginUserResponse, error)
 }
 
 type authService struct {
@@ -42,16 +42,16 @@ func NewAuthService() AuthService {
 	return &userService{userRepo: repository.NewUserRepo()}
 }
 
-func (t *userService) LoginUser(req LoginUserReq) (*LoginUserResponse, error) {
+func (t *userService) LoginUser(ctx context.Context, req LoginUserReq) (*LoginUserResponse, error) {
 	user, err := t.userRepo.GetUser(repository.GetUserOpts{Username: req.Username})
 
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		logger.W(nil, "User does not exist", logger.Field("username", req.Username))
+		logger.W(ctx, "User does not exist", logger.Field("username", req.Username))
 		return nil, err
 	}
 
 	if err != nil {
-		logger.W(nil, "Error while getting user details", logger.Field("username", req.Username))
+		logger.W(ctx, "Error while getting user details", logger.Field("username", req.Username))
 		return nil, err
 	}
 
@@ -61,13 +61,13 @@ func (t *userService) LoginUser(req LoginUserReq) (*LoginUserResponse, error) {
 
 	// TODO: fix password comparision
 	//if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)); err != nil {
-	//	logger.W(nil, "Invalid username or password", logger.Field("username", req.Username))
+	//	logger.W(ctx, "Invalid username or password", logger.Field("username", req.Username))
 	//	return nil, err
 	//}
 
 	token, err := generateJWTToken(user.ID)
 	if err != nil {
-		logger.E(nil, err, "Failed to generate token", logger.Field("username", req.Username))
+		logger.E(ctx, err, "Failed to generate token", logger.Field("username", req.Username))
 		return nil, err
 	}
 
