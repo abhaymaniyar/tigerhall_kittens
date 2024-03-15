@@ -78,11 +78,11 @@ func (t *userService) LoginUser(req LoginUserReq) (*LoginUserResponse, error) {
 
 func generateJWTToken(userID uuid.UUID) (string, error) {
 	claims := &Claims{
-		UserID: userID,
-		Claims: jwt.MapClaims{
-			"expires_at": time.Now().Add(time.Hour * 24).Unix(),
-			"issued_at":  time.Now().Unix(),
+		Claims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24)),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
 		},
+		UserID: userID,
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)

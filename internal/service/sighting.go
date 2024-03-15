@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"errors"
 	"github.com/google/uuid"
 	"tigerhall_kittens/internal/logger"
@@ -21,7 +22,7 @@ type ReportSightingReq struct {
 }
 
 type SightingService interface {
-	ReportSighting(user ReportSightingReq) error
+	ReportSighting(ctx context.Context, user ReportSightingReq) error
 	GetSightings(opts repository.GetSightingOpts) (*[]model.Sighting, error)
 }
 
@@ -33,7 +34,7 @@ func NewSightingService() SightingService {
 	return &sightingService{sightingRepo: repository.NewSightingRepo()}
 }
 
-func (t *sightingService) ReportSighting(reportSightingReq ReportSightingReq) error {
+func (t *sightingService) ReportSighting(ctx context.Context, reportSightingReq ReportSightingReq) error {
 	count, err := t.sightingRepo.GetSightingsCountInRange(repository.GetSightingOpts{
 		TigerID:       reportSightingReq.TigerID,
 		Lat:           reportSightingReq.Lat,
@@ -54,9 +55,8 @@ func (t *sightingService) ReportSighting(reportSightingReq ReportSightingReq) er
 	sightingTs, err := time.Parse(time.RFC3339, reportSightingReq.Timestamp)
 
 	sighting := &model.Sighting{
-		TigerID: reportSightingReq.TigerID,
-		// TODO: get user id either from access token or from request
-		ReportedByUserID: uuid.MustParse("29c1fac8-a1e6-4859-95b9-3d7c0425b70c"),
+		TigerID:          reportSightingReq.TigerID,
+		ReportedByUserID: uuid.MustParse(ctx.Value("userID").(string)),
 		Lat:              reportSightingReq.Lat,
 		Lon:              reportSightingReq.Lon,
 		Timestamp:        sightingTs,

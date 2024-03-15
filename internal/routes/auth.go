@@ -8,5 +8,5 @@ import (
 
 func RegisterAuthRoutes(router *httprouter.Router) {
 	authHandler := handler.NewAuthHandler()
-	router.POST("/api/v1/auth/login", middleware.AuthMiddleware(middleware.LoggingMiddleware(authHandler.Login())))
+	router.POST("/api/v1/auth/login", middleware.LoggingMiddleware(authHandler.Login()))
 }
