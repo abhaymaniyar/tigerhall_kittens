@@ -27,6 +27,9 @@ func main() {
 	userHandler := handler.NewUserHandler()
 	router.POST("/api/v1/users", middleware.AuthMiddleware(middleware.LoggingMiddleware(userHandler.CreateUser())))
 
+	authHandler := handler.NewAuthHandler()
+	router.POST("/api/v1/login", middleware.AuthMiddleware(middleware.LoggingMiddleware(authHandler.Login())))
+
 	sightingHandler := handler.NewSightingHandler()
 	router.POST("/api/v1/sightings", middleware.AuthMiddleware(middleware.LoggingMiddleware(sightingHandler.ReportSighting())))
 	router.GET("/api/v1/tigers/:tiger_id/sightings", middleware.AuthMiddleware(middleware.LoggingMiddleware(sightingHandler.GetSightings())))
