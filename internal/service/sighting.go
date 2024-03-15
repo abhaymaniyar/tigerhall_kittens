@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"github.com/google/uuid"
+	"tigerhall_kittens/cmd/notification_worker"
 	"tigerhall_kittens/internal/logger"
 	"tigerhall_kittens/internal/model"
 	"tigerhall_kittens/internal/repository"
@@ -27,11 +28,15 @@ type SightingService interface {
 }
 
 type sightingService struct {
-	sightingRepo repository.SightingRepo
+	sightingRepo         repository.SightingRepo
+	sightingEmailNotifer notification_worker.SightingEmailNotifer
 }
 
 func NewSightingService() SightingService {
-	return &sightingService{sightingRepo: repository.NewSightingRepo()}
+	return &sightingService{
+		sightingRepo:         repository.NewSightingRepo(),
+		sightingEmailNotifer: notification_worker.NewSightingEmailNotifer(),
+	}
 }
 
 func (t *sightingService) ReportSighting(ctx context.Context, reportSightingReq ReportSightingReq) error {
@@ -53,10 +58,15 @@ func (t *sightingService) ReportSighting(ctx context.Context, reportSightingReq 
 	}
 
 	sightingTs, err := time.Parse(time.RFC3339, reportSightingReq.Timestamp)
+	userID, parseErr := uuid.Parse(ctx.Value("userID").(string))
+	if parseErr != nil {
+		logger.E(nil, err, "Error while fetching user id from context")
+		return errors.New("error while fetching user id from context")
+	}
 
 	sighting := &model.Sighting{
 		TigerID:          reportSightingReq.TigerID,
-		ReportedByUserID: uuid.MustParse(ctx.Value("userID").(string)),
+		ReportedByUserID: userID,
 		Lat:              reportSightingReq.Lat,
 		Lon:              reportSightingReq.Lon,
 		Timestamp:        sightingTs,
@@ -67,6 +77,12 @@ func (t *sightingService) ReportSighting(ctx context.Context, reportSightingReq 
 		// TODO: add error reporting and logging
 		logger.E(nil, err, "Failed to create reportSightingReq")
 		return err
+	}
+
+	err = t.sightingEmailNotifer.ReportSightingToAllUsers(ctx, reportSightingReq.TigerID)
+	if err != nil {
+		logger.E(nil, err, "Error while sending email notification for sightings", logger.Field("tiger_id", reportSightingReq.TigerID), logger.Field("user_id", userID))
+		return errors.New("error while checking existing sightings")
 	}
 
 	return nil
