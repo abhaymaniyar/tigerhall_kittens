@@ -39,8 +39,22 @@ type authService struct {
 	userRepo repository.UserRepo
 }
 
-func NewAuthService() AuthService {
-	return &authService{userRepo: repository.NewUserRepo()}
+type AuthServiceOption func(service *authService)
+
+func NewAuthService(options ...AuthServiceOption) AuthService {
+	service := &authService{userRepo: repository.NewUserRepo()}
+
+	for _, option := range options {
+		option(service)
+	}
+
+	return service
+}
+
+func WithUserRepoForAuthService(repo repository.UserRepo) AuthServiceOption {
+	return func(s *authService) {
+		s.userRepo = repo
+	}
 }
 
 func (t *authService) LoginUser(ctx context.Context, req LoginUserReq) (*LoginUserResponse, error) {

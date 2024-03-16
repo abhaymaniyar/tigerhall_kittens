@@ -46,7 +46,7 @@ func TestUserService_CreateUser(t *testing.T) {
 			WithUserRepo(mockUserRepo),
 		)
 
-		actualErr := tigerService.CreateUser(ctx, createUserReq)
+		actualErr := tigerService.CreateUser(ctx, &createUserReq)
 		assert.Equal(t, expectedErr, actualErr)
 	})
 
@@ -65,7 +65,7 @@ func TestUserService_CreateUser(t *testing.T) {
 			WithUserRepo(mockUserRepo),
 		)
 
-		actualErr := tigerService.CreateUser(ctx, createUserReq)
+		actualErr := tigerService.CreateUser(ctx, &createUserReq)
 		assert.Equal(t, expectedErr, actualErr)
 	})
 
@@ -87,7 +87,7 @@ func TestUserService_CreateUser(t *testing.T) {
 			WithUserRepo(mockUserRepo),
 		)
 
-		actualErr := tigerService.CreateUser(ctx, createUserReq)
+		actualErr := tigerService.CreateUser(ctx, &createUserReq)
 		assert.Equal(t, expectedErr, actualErr)
 	})
 
@@ -106,7 +106,7 @@ func TestUserService_CreateUser(t *testing.T) {
 			WithUserRepo(mockUserRepo),
 		)
 
-		actualErr := tigerService.CreateUser(ctx, createUserReq)
+		actualErr := tigerService.CreateUser(ctx, &createUserReq)
 		assert.Equal(t, nil, actualErr)
 	})
 }
