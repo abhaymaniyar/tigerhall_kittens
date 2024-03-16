@@ -58,7 +58,7 @@ func (t *userService) CreateUser(ctx context.Context, createUserReq *CreateUserR
 		logger.D(ctx, "User already exists",
 			logger.Field("email", createUserReq.Email),
 			logger.Field("username", createUserReq.Username))
-		return errors.New("user already exists with same email/username")
+		return ErrUserAlreadyExistsWithSameEmailUsername
 	}
 
 	user = &model.User{
@@ -77,8 +77,7 @@ func (t *userService) CreateUser(ctx context.Context, createUserReq *CreateUserR
 	user.Password = string(hashedPassword)
 
 	if err := t.userRepo.CreateUser(ctx, user); err != nil {
-		logger.E(ctx, err, "Failed to create user")
-		return errors.New("error while creating user")
+		return ErrCreatingUser
 	}
 
 	return nil

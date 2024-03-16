@@ -37,7 +37,7 @@ func (h *sightingHandler) ReportSighting(r *web.Request) (*web.JSONResponse, web
 	err := h.sightingService.ReportSighting(r.Context(), req)
 	if err != nil {
 		//TODO: fix this to return 400 in case of already existing sighting
-		return nil, web.ErrInternalServerError(fmt.Sprintf("Error while reporting sighting : %s", err.Error()))
+		return nil, errorResponse(err)
 	}
 
 	return &web.JSONResponse{}, nil

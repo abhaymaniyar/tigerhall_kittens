@@ -17,6 +17,7 @@ import (
 const (
 	EnvDevelopment = "development"
 	EnvStaging     = "staging"
+	EnvTest        = "test"
 	EnvProduction  = "production"
 )
 
@@ -90,6 +91,7 @@ func SetupDBConnection(ctx context.Context) {
 		logger.E(ctx, err, "Failed connecting to database", logger.Field("error", err))
 		panic(err)
 	}
+	db.RunMigrations()
 
 	logger.I(ctx, "Established connection to database")
 }
@@ -98,7 +100,7 @@ func SetupLogger(env string) {
 	switch env {
 	case EnvDevelopment:
 		logger.Init(logger.DEBUG)
-	case EnvStaging, EnvProduction:
+	case EnvTest, EnvStaging, EnvProduction:
 		logger.Init(logger.INFO)
 	}
 }

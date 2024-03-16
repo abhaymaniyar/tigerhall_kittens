@@ -2,8 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
-
 	"tigerhall_kittens/internal/service"
 	"tigerhall_kittens/internal/web"
 )
@@ -33,7 +31,7 @@ func (h *userHandler) CreateUser(r *web.Request) (*web.JSONResponse, web.ErrorIn
 
 	err := h.userService.CreateUser(r.Context(), &user)
 	if err != nil {
-		return nil, web.ErrInternalServerError(fmt.Sprintf("error while creating user : %s", err))
+		return nil, errorResponse(err)
 	}
 
 	return &web.JSONResponse{}, nil

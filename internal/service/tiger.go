@@ -2,13 +2,13 @@ package service
 
 import (
 	"context"
-
 	"tigerhall_kittens/internal/logger"
 	"tigerhall_kittens/internal/model"
 	"tigerhall_kittens/internal/repository"
 )
 
 type TigerService interface {
+	GetTiger(ctx context.Context, opts repository.GetTigerOpts) (*model.Tiger, error)
 	ListTigers(ctx context.Context, opts repository.ListTigersOpts) ([]model.Tiger, error)
 	CreateTiger(ctx context.Context, tiger *model.Tiger) error
 }
@@ -33,6 +33,16 @@ func WithTigerRepo(repo repository.TigerRepo) TigerServiceOption {
 	return func(s *tigerService) {
 		s.tigerRepo = repo
 	}
+}
+
+func (t *tigerService) GetTiger(ctx context.Context, opts repository.GetTigerOpts) (*model.Tiger, error) {
+	tiger, err := t.tigerRepo.GetTiger(ctx, opts)
+	if err != nil {
+		logger.E(ctx, err, "Error while fetching tiger", logger.Field("opts", opts))
+		return nil, err
+	}
+
+	return tiger, nil
 }
 
 func (t *tigerService) ListTigers(ctx context.Context, opts repository.ListTigersOpts) ([]model.Tiger, error) {

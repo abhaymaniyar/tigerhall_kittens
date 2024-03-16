@@ -74,13 +74,13 @@ func (t *authService) LoginUser(ctx context.Context, req LoginUserReq) (*LoginUs
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)); err != nil {
 		logger.W(ctx, "Invalid username or password", logger.Field("username", req.Username))
-		return nil, errors.New("invalid username or password")
+		return nil, ErrInvalidUsernamePassword
 	}
 
 	token, err := generateJWTToken(user.ID)
 	if err != nil {
 		logger.E(ctx, err, "Failed to generate token", logger.Field("username", req.Username))
-		return nil, errors.New("failed to generate token")
+		return nil, ErrTokenGenerationFailed
 	}
 
 	return &LoginUserResponse{

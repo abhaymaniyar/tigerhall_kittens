@@ -63,7 +63,7 @@ func TestUserHandler_CreateUser(t *testing.T) {
 		respBody, _ := ioutil.ReadAll(recorder.Body)
 		var resData map[string]interface{}
 		_ = json.Unmarshal(respBody, &resData)
-		assert.Equal(t, resData["error"].(map[string]interface{})["message"], "Failed to decode request body")
+		assert.Equal(t, "Failed to decode request body", resData["error"].(map[string]interface{})["message"])
 		assert.Equal(t, resData["success"], false)
 	})
 
@@ -99,7 +99,7 @@ func TestUserHandler_CreateUser(t *testing.T) {
 		respBody, _ := ioutil.ReadAll(recorder.Body)
 		var resData map[string]interface{}
 		_ = json.Unmarshal(respBody, &resData)
-		assert.Equal(t, resData["error"].(map[string]interface{})["message"], "error while creating user : some error")
+		assert.Equal(t, "error while processing request : some error", resData["error"].(map[string]interface{})["message"])
 		assert.Equal(t, resData["success"], false)
 	})
 

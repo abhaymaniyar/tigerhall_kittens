@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-
 	"gorm.io/gorm"
 
 	"tigerhall_kittens/internal/db"
@@ -34,14 +33,16 @@ func NewSightingRepo() SightingRepo {
 
 func (t *sightingRepo) GetSightings(ctx context.Context, opts GetSightingOpts) ([]model.Sighting, error) {
 	var sightings []model.Sighting
-	query := t.DB.Order("timestamp desc")
+	query := t.DB.Order("sighted_at desc")
 
 	if opts.Limit != 0 {
 		query = query.Limit(opts.Limit).Offset(opts.Offset)
 	}
 
+	query = query.Where("tiger_id = ?", opts.TigerID)
+
 	if opts.RangeInMeters != 0 {
-		query = query.Where("tiger_id = ? AND st_distancesphere(st_makepoint(lat, lon), st_makepoint(?, ?)) < ?", opts.TigerID, opts.Lat, opts.Lon, opts.RangeInMeters)
+		query = query.Where("st_distancesphere(st_makepoint(lat, lon), st_makepoint(?, ?)) < ?", opts.Lat, opts.Lon, opts.RangeInMeters)
 	}
 
 	err := query.Find(&sightings).Error

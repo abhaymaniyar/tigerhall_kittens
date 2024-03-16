@@ -144,13 +144,13 @@ func TestSightingHandler_GetSightings(t *testing.T) {
 				TigerID:   uint(tigerID),
 				Lat:       1.2,
 				Lon:       2.2,
-				Timestamp: time.Now(),
+				SightedAt: time.Now(),
 			},
 			{
 				TigerID:   uint(tigerID),
 				Lat:       2.2,
 				Lon:       4.2,
-				Timestamp: time.Now().Add(4 * time.Hour),
+				SightedAt: time.Now().Add(4 * time.Hour),
 			},
 		}
 
@@ -220,7 +220,7 @@ func TestSightingHandler_ReportSighting(t *testing.T) {
 		respBody, _ := ioutil.ReadAll(recorder.Body)
 		var resData map[string]interface{}
 		_ = json.Unmarshal(respBody, &resData)
-		assert.Equal(t, resData["error"].(map[string]interface{})["message"], "Failed to decode request body")
+		assert.Equal(t, "Failed to decode request body", resData["error"].(map[string]interface{})["message"])
 		assert.Equal(t, false, resData["success"])
 	})
 
@@ -256,7 +256,7 @@ func TestSightingHandler_ReportSighting(t *testing.T) {
 		respBody, _ := ioutil.ReadAll(recorder.Body)
 		var resData map[string]interface{}
 		_ = json.Unmarshal(respBody, &resData)
-		assert.Equal(t, resData["error"].(map[string]interface{})["message"], "Error while reporting sighting : some error")
+		assert.Equal(t, "error while processing request : some error", resData["error"].(map[string]interface{})["message"])
 		assert.Equal(t, false, resData["success"])
 	})
 

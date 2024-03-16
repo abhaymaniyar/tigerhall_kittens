@@ -2,8 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
-
 	"tigerhall_kittens/internal/service"
 	"tigerhall_kittens/internal/web"
 	"tigerhall_kittens/utils"
@@ -35,7 +33,7 @@ func (h *authHandler) Login(r *web.Request) (*web.JSONResponse, web.ErrorInterfa
 	loginResp, err := h.authService.LoginUser(r.Context(), req)
 	if err != nil {
 		// TODO: dont generalize the errors to be 400 here
-		return nil, web.ErrInternalServerError(fmt.Sprintf("Error while logging in req : %s", err.Error()))
+		return nil, errorResponse(err)
 	}
 
 	jsonResponse, err := utils.StructToMap(loginResp)

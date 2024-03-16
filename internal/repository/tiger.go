@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-
 	"gorm.io/gorm"
 
 	"tigerhall_kittens/internal/db"
@@ -15,8 +14,13 @@ type ListTigersOpts struct {
 	Offset int
 }
 
+type GetTigerOpts struct {
+	TigerID uint
+}
+
 type TigerRepo interface {
 	SaveTiger(ctx context.Context, tiger *model.Tiger) error
+	GetTiger(ctx context.Context, opts GetTigerOpts) (*model.Tiger, error)
 	GetTigers(ctx context.Context, opts ListTigersOpts) ([]model.Tiger, error)
 }
 
@@ -36,6 +40,18 @@ func (t *tigerRepo) SaveTiger(ctx context.Context, tiger *model.Tiger) error {
 	}
 
 	return nil
+}
+
+func (t *tigerRepo) GetTiger(ctx context.Context, opts GetTigerOpts) (*model.Tiger, error) {
+	var tiger model.Tiger
+
+	queryErr := t.DB.Where(model.Tiger{ID: opts.TigerID}).Find(&tiger).Error
+	if queryErr != nil {
+		logger.E(ctx, queryErr, "Error while fetching tigers")
+		return nil, queryErr
+	}
+
+	return &tiger, nil
 }
 
 func (t *tigerRepo) GetTigers(ctx context.Context, opts ListTigersOpts) ([]model.Tiger, error) {

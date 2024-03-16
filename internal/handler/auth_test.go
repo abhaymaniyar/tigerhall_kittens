@@ -63,7 +63,7 @@ func TestAuthHandler_Login(t *testing.T) {
 		respBody, _ := ioutil.ReadAll(recorder.Body)
 		var resData map[string]interface{}
 		_ = json.Unmarshal(respBody, &resData)
-		assert.Equal(t, resData["error"].(map[string]interface{})["message"], "Failed to decode request body")
+		assert.Equal(t, "Failed to decode request body", resData["error"].(map[string]interface{})["message"])
 		assert.Equal(t, false, resData["success"])
 	})
 
@@ -99,7 +99,7 @@ func TestAuthHandler_Login(t *testing.T) {
 		respBody, _ := ioutil.ReadAll(recorder.Body)
 		var resData map[string]interface{}
 		_ = json.Unmarshal(respBody, &resData)
-		assert.Equal(t, resData["error"].(map[string]interface{})["message"], "Error while logging in req : some error")
+		assert.Equal(t, "error while processing request : some error", resData["error"].(map[string]interface{})["message"])
 		assert.Equal(t, resData["success"], false)
 	})
 

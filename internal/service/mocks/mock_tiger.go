@@ -50,6 +50,21 @@ func (mr *MockTigerServiceMockRecorder) CreateTiger(ctx, tiger interface{}) *gom
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateTiger", reflect.TypeOf((*MockTigerService)(nil).CreateTiger), ctx, tiger)
 }
 
+// GetTiger mocks base method.
+func (m *MockTigerService) GetTiger(ctx context.Context, opts repository.GetTigerOpts) (*model.Tiger, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetTiger", ctx, opts)
+	ret0, _ := ret[0].(*model.Tiger)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetTiger indicates an expected call of GetTiger.
+func (mr *MockTigerServiceMockRecorder) GetTiger(ctx, opts interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTiger", reflect.TypeOf((*MockTigerService)(nil).GetTiger), ctx, opts)
+}
+
 // ListTigers mocks base method.
 func (m *MockTigerService) ListTigers(ctx context.Context, opts repository.ListTigersOpts) ([]model.Tiger, error) {
 	m.ctrl.T.Helper()

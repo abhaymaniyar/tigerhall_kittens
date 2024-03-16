@@ -49,14 +49,14 @@ func TestSightingService_GetSightings(t *testing.T) {
 		ctx := context.Background()
 		mockSightings := []model.Sighting{
 			{
-				ID:        1,
+				ID:        uuid.New(),
 				TigerID:   tigerOneID,
-				Timestamp: time.Now(),
+				SightedAt: time.Now(),
 			},
 			{
-				ID:        1,
+				ID:        uuid.New(),
 				TigerID:   tigerTwoID,
-				Timestamp: time.Now().Add(2 * time.Hour),
+				SightedAt: time.Now().Add(2 * time.Hour),
 			},
 		}
 
@@ -98,7 +98,7 @@ func TestSightingService_ReportSighting(t *testing.T) {
 
 		ctx := context.Background()
 
-		expectedErr := errors.New("error while checking existing sightings")
+		expectedErr := ErrFetchingExistingSightings
 		getSightingOpts := repository.GetSightingOpts{
 			TigerID:       tigerOneID,
 			RangeInMeters: DEFAULT_SIGHTING_RANGE_IN_METERS,
@@ -131,13 +131,13 @@ func TestSightingService_ReportSighting(t *testing.T) {
 
 		ctx := context.Background()
 
-		expectedErr := errors.New("sighting already exists in range")
+		expectedErr := ErrSightingAlreadyReported
 
 		// same tiger on same location one hour ago
 		existingSightingsForSameTigerInDefaultRange := []model.Sighting{
 			{
 				TigerID:   tigerOneID,
-				Timestamp: time.Now().Add(-time.Hour),
+				SightedAt: time.Now().Add(-time.Hour),
 				Lat:       lat,
 				Lon:       lon,
 			},
@@ -165,7 +165,7 @@ func TestSightingService_ReportSighting(t *testing.T) {
 		defer ctrl.Finish()
 
 		ctx := context.Background()
-		ctx = context.WithValue(ctx, "userID", userID)
+		ctx = context.WithValue(ctx, "userID", userID.String())
 
 		expectedErr := errors.New("something went wrong while reporting")
 
@@ -181,15 +181,7 @@ func TestSightingService_ReportSighting(t *testing.T) {
 		mockSightingRepo := mock_repository.NewMockSightingRepo(ctrl)
 		mockSightingRepo.EXPECT().GetSightings(ctx, getSightingOpts).Return(existingSightingsForSameTigerInDefaultRange, nil)
 
-		sightingTs, _ := time.Parse(time.RFC3339, reportSightingReq.Timestamp)
-		mockSightingRepo.EXPECT().ReportSighting(ctx, &model.Sighting{
-			TigerID:          reportSightingReq.TigerID,
-			ReportedByUserID: userID,
-			Lat:              reportSightingReq.Lat,
-			Lon:              reportSightingReq.Lon,
-			Timestamp:        sightingTs,
-			ImageURL:         reportSightingReq.ImageURL,
-		}).Return(expectedErr)
+		mockSightingRepo.EXPECT().ReportSighting(ctx, gomock.Any()).Return(expectedErr)
 
 		sightingService := NewSightingService(
 			WithSightingRepo(mockSightingRepo),
@@ -204,9 +196,9 @@ func TestSightingService_ReportSighting(t *testing.T) {
 		defer ctrl.Finish()
 
 		ctx := context.Background()
-		ctx = context.WithValue(ctx, "userID", userID)
+		ctx = context.WithValue(ctx, "userID", userID.String())
 
-		expectedErr := errors.New("error while sending email notifications about sighting")
+		expectedErr := ErrSendingEmailNotification
 
 		// no existing sightings for the tiger
 		var existingSightingsForSameTigerInDefaultRange []model.Sighting
@@ -220,16 +212,7 @@ func TestSightingService_ReportSighting(t *testing.T) {
 		mockSightingRepo := mock_repository.NewMockSightingRepo(ctrl)
 		mockSightingRepo.EXPECT().GetSightings(ctx, getSightingOpts).Return(existingSightingsForSameTigerInDefaultRange, nil)
 
-		sightingTs, _ := time.Parse(time.RFC3339, reportSightingReq.Timestamp)
-		sighting := &model.Sighting{
-			TigerID:          reportSightingReq.TigerID,
-			ReportedByUserID: userID,
-			Lat:              reportSightingReq.Lat,
-			Lon:              reportSightingReq.Lon,
-			Timestamp:        sightingTs,
-			ImageURL:         reportSightingReq.ImageURL,
-		}
-		mockSightingRepo.EXPECT().ReportSighting(ctx, sighting).Return(nil)
+		mockSightingRepo.EXPECT().ReportSighting(ctx, gomock.Any()).Return(nil)
 
 		mockEmailNotifer := mock_notification_worker.NewMockSightingEmailNotifer(ctrl)
 		mockEmailNotifer.EXPECT().
@@ -250,7 +233,7 @@ func TestSightingService_ReportSighting(t *testing.T) {
 		defer ctrl.Finish()
 
 		ctx := context.Background()
-		ctx = context.WithValue(ctx, "userID", userID)
+		ctx = context.WithValue(ctx, "userID", userID.String())
 
 		// no existing sightings for the tiger
 		var existingSightingsForSameTigerInDefaultRange []model.Sighting
@@ -264,16 +247,7 @@ func TestSightingService_ReportSighting(t *testing.T) {
 		mockSightingRepo := mock_repository.NewMockSightingRepo(ctrl)
 		mockSightingRepo.EXPECT().GetSightings(ctx, getSightingOpts).Return(existingSightingsForSameTigerInDefaultRange, nil)
 
-		sightingTs, _ := time.Parse(time.RFC3339, reportSightingReq.Timestamp)
-		sighting := &model.Sighting{
-			TigerID:          reportSightingReq.TigerID,
-			ReportedByUserID: userID,
-			Lat:              reportSightingReq.Lat,
-			Lon:              reportSightingReq.Lon,
-			Timestamp:        sightingTs,
-			ImageURL:         reportSightingReq.ImageURL,
-		}
-		mockSightingRepo.EXPECT().ReportSighting(ctx, sighting).Return(nil)
+		mockSightingRepo.EXPECT().ReportSighting(ctx, gomock.Any()).Return(nil)
 
 		mockEmailNotifer := mock_notification_worker.NewMockSightingEmailNotifer(ctrl)
 		mockEmailNotifer.EXPECT().
