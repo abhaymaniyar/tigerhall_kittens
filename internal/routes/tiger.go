@@ -8,6 +8,6 @@ import (
 
 func RegisterTigerRoutes(router *httprouter.Router) {
 	tigerHandler := handler.NewTigerHandler()
-	router.POST("/api/v1/tigers", middleware.ServeV1Endpoint(middleware.AuthMiddlewareTwo, tigerHandler.CreateTiger))
-	router.GET("/api/v1/tigers", middleware.ServeV1Endpoint(middleware.AuthMiddlewareTwo, tigerHandler.ListTigers))
+	router.POST("/api/v1/tigers", middleware.ServeV1Endpoint(middleware.AuthMiddleware, tigerHandler.CreateTiger))
+	router.GET("/api/v1/tigers", middleware.ServeV1Endpoint(middleware.AuthMiddleware, tigerHandler.ListTigers))
 }

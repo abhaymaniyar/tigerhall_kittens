@@ -21,10 +21,15 @@ func TestAuthHandler_Login(t *testing.T) {
 	var req service.LoginUserReq
 
 	loginRequestBody := `
-			{
-				"username": "user_eighty212",
-				"password": "user_eighty212"
-			}
+		{
+			"username": "user_eighty212",
+			"password": "user_eighty212"
+		}
+	`
+
+	invalidLoginRequestBody := `
+		{
+			"username": "user_eighty212",
 	`
 
 	successfulLoginResponse := &service.LoginUserResponse{
@@ -33,6 +38,32 @@ func TestAuthHandler_Login(t *testing.T) {
 	}
 
 	path := "/api/v1/login"
+
+	t.Run("should return bad request when request decode fails", func(t *testing.T) {
+		recorder := httptest.NewRecorder()
+		router := httprouter.New()
+
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+
+		mockAuthService := mock_service.NewMockAuthService(ctrl)
+		authHandler := MakeAuthHandler(mockAuthService)
+
+		req, _ := http.NewRequestWithContext(context.Background(), http.MethodPost,
+			path, bytes.NewBuffer([]byte(invalidLoginRequestBody)))
+
+		router.Handle(http.MethodPost, path, middleware.ServeV1Endpoint(middleware.EmptyMiddleware,
+			authHandler.Login))
+		router.ServeHTTP(recorder, req)
+
+		respCode := recorder.Code
+		assert.Equal(t, http.StatusBadRequest, respCode)
+		respBody, _ := ioutil.ReadAll(recorder.Body)
+		var resData map[string]interface{}
+		_ = json.Unmarshal(respBody, &resData)
+		assert.Equal(t, resData["error"].(map[string]interface{})["message"], "Failed to decode request body")
+		assert.Equal(t, false, resData["success"])
+	})
 
 	t.Run("should return ISE when login user fails", func(t *testing.T) {
 		recorder := httptest.NewRecorder()
