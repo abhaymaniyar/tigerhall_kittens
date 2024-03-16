@@ -37,7 +37,6 @@ func Connect(dsn string, maxIdleConnections, maxOpenConnections int) error {
 	}
 
 	//gormdb
-	//db.LogMode(false)
 	gormdb.SetMaxIdleConns(maxIdleConnections)
 	gormdb.SetMaxOpenConns(maxOpenConnections)
 

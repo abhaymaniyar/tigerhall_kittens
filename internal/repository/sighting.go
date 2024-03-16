@@ -18,9 +18,8 @@ type GetSightingOpts struct {
 }
 
 type SightingRepo interface {
+	GetSightings(ctx context.Context, opts GetSightingOpts) ([]model.Sighting, error)
 	ReportSighting(ctx context.Context, sighting *model.Sighting) error
-	GetSightingsCountInRange(ctx context.Context, opts GetSightingOpts) (int64, error)
-	GetSightings(ctx context.Context, opts GetSightingOpts) (*[]model.Sighting, error)
 }
 
 type sightingRepo struct {
@@ -31,6 +30,28 @@ func NewSightingRepo() SightingRepo {
 	return &sightingRepo{DB: db.Get()}
 }
 
+func (t *sightingRepo) GetSightings(ctx context.Context, opts GetSightingOpts) ([]model.Sighting, error) {
+	var sightings []model.Sighting
+	query := t.DB.Order("timestamp desc")
+
+	if opts.Limit != 0 {
+		query = query.Limit(opts.Limit).Offset(opts.Offset)
+	}
+
+	if opts.RangeInMeters != 0 {
+		query = query.Where("tiger_id = ? AND st_distancesphere(st_makepoint(lat, lon), st_makepoint(?, ?)) < ?", opts.TigerID, opts.Lat, opts.Lon, opts.RangeInMeters)
+	}
+
+	err := query.Find(&sightings).Error
+
+	if err != nil {
+		logger.E(ctx, err, "Error while fetching sightings")
+		return nil, err
+	}
+
+	return sightings, nil
+}
+
 func (t *sightingRepo) ReportSighting(ctx context.Context, sighting *model.Sighting) error {
 	err := t.DB.Create(sighting).Error
 	if err != nil {
@@ -39,37 +60,4 @@ func (t *sightingRepo) ReportSighting(ctx context.Context, sighting *model.Sight
 	}
 
 	return nil
-}
-
-func (t *sightingRepo) GetSightingsCountInRange(ctx context.Context, opts GetSightingOpts) (int64, error) {
-	var count int64
-	err := t.DB.Model(&model.Sighting{}).
-		Where("tiger_id = ? AND st_distancesphere(st_makepoint(lat, lon), st_makepoint(?, ?)) < 5000", opts.TigerID, opts.Lat, opts.Lon).Count(&count).
-		Error
-
-	if err != nil {
-		logger.E(ctx, err, "Error while fetching sightings count",
-			logger.Field("tiger_id", opts.TigerID),
-			logger.Field("range_in_meters", opts.RangeInMeters))
-		return 0, err
-	}
-
-	return count, nil
-}
-
-func (t *sightingRepo) GetSightings(ctx context.Context, opts GetSightingOpts) (*[]model.Sighting, error) {
-	var sightings *[]model.Sighting
-	err := t.DB.
-		Limit(opts.Limit).
-		Offset(opts.Offset).
-		Order("timestamp desc").
-		Where(&model.Sighting{TigerID: opts.TigerID}).
-		Find(&sightings).Error
-
-	if err != nil {
-		logger.E(ctx, err, "Error while fetching sightings")
-		return nil, err
-	}
-
-	return sightings, nil
 }

@@ -23,7 +23,7 @@ type ReportSightingReq struct {
 
 type SightingService interface {
 	ReportSighting(ctx context.Context, user ReportSightingReq) error
-	GetSightings(ctx context.Context, opts repository.GetSightingOpts) (*[]model.Sighting, error)
+	GetSightings(ctx context.Context, opts repository.GetSightingOpts) ([]model.Sighting, error)
 }
 
 type sightingService struct {
@@ -39,7 +39,7 @@ func NewSightingService() SightingService {
 }
 
 func (t *sightingService) ReportSighting(ctx context.Context, reportSightingReq ReportSightingReq) error {
-	count, err := t.sightingRepo.GetSightingsCountInRange(ctx, repository.GetSightingOpts{
+	sightings, err := t.sightingRepo.GetSightings(ctx, repository.GetSightingOpts{
 		TigerID:       reportSightingReq.TigerID,
 		Lat:           reportSightingReq.Lat,
 		Lon:           reportSightingReq.Lon,
@@ -51,7 +51,7 @@ func (t *sightingService) ReportSighting(ctx context.Context, reportSightingReq 
 		return errors.New("error while checking existing sightings")
 	}
 
-	if count > 0 {
+	if sightings != nil && len(sightings) > 0 {
 		logger.I(ctx, "A sighting of the same tiger within 5 kilometers already exists", logger.Field("tiger_id", reportSightingReq.TigerID))
 		return errors.New("sighting already exists in range")
 	}
@@ -77,7 +77,7 @@ func (t *sightingService) ReportSighting(ctx context.Context, reportSightingReq 
 		return err
 	}
 
-	err = t.sightingEmailNotifer.ReportSightingToAllUsers(ctx, reportSightingReq.TigerID)
+	err = t.sightingEmailNotifer.ReportSightingToAllUsers(ctx, reportSightingReq.TigerID, sightings)
 	if err != nil {
 		logger.E(ctx, err, "Error while sending email notification for sightings", logger.Field("tiger_id", reportSightingReq.TigerID), logger.Field("user_id", userID))
 		return errors.New("error while checking existing sightings")
@@ -86,7 +86,7 @@ func (t *sightingService) ReportSighting(ctx context.Context, reportSightingReq 
 	return nil
 }
 
-func (t *sightingService) GetSightings(ctx context.Context, opts repository.GetSightingOpts) (*[]model.Sighting, error) {
+func (t *sightingService) GetSightings(ctx context.Context, opts repository.GetSightingOpts) ([]model.Sighting, error) {
 	sightings, err := t.sightingRepo.GetSightings(ctx, opts)
 
 	if err != nil {
