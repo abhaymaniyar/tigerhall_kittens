@@ -8,6 +8,6 @@ import (
 
 func RegisterSightingRoutes(router *httprouter.Router) {
 	sightingHandler := handler.NewSightingHandler()
-	router.POST("/api/v1/sightings", middleware.AuthMiddleware(middleware.LoggingMiddleware(sightingHandler.ReportSighting())))
-	router.GET("/api/v1/tigers/:tiger_id/sightings", middleware.AuthMiddleware(middleware.LoggingMiddleware(sightingHandler.GetSightings())))
+	router.POST("/api/v1/sightings", middleware.ServeV1Endpoint(middleware.AuthMiddlewareTwo, sightingHandler.ReportSighting))
+	router.GET("/api/v1/tigers/:tiger_id/sightings", middleware.ServeV1Endpoint(middleware.AuthMiddlewareTwo, sightingHandler.GetSightings))
 }

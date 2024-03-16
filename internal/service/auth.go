@@ -3,10 +3,11 @@ package service
 import (
 	"context"
 	"errors"
-	"fmt"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
+	"tigerhall_kittens/internal/config"
 	"tigerhall_kittens/internal/logger"
 	"tigerhall_kittens/internal/repository"
 	"time"
@@ -28,7 +29,7 @@ type Claims struct {
 	jwt.Claims
 }
 
-var JWTSecretKey = []byte("your_secret_key")
+var JWTSecretKey = []byte(config.Env.SecretKey)
 
 type AuthService interface {
 	LoginUser(ctx context.Context, req LoginUserReq) (*LoginUserResponse, error)
@@ -55,20 +56,15 @@ func (t *userService) LoginUser(ctx context.Context, req LoginUserReq) (*LoginUs
 		return nil, err
 	}
 
-	//fmt.Println(user)
-	fmt.Println(user.Password)
-	//fmt.Println(req.Password)
-
-	// TODO: fix password comparision
-	//if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)); err != nil {
-	//	logger.W(ctx, "Invalid username or password", logger.Field("username", req.Username))
-	//	return nil, err
-	//}
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)); err != nil {
+		logger.W(ctx, "Invalid username or password", logger.Field("username", req.Username))
+		return nil, errors.New("invalid username or password")
+	}
 
 	token, err := generateJWTToken(user.ID)
 	if err != nil {
 		logger.E(ctx, err, "Failed to generate token", logger.Field("username", req.Username))
-		return nil, err
+		return nil, errors.New("failed to generate token")
 	}
 
 	return &LoginUserResponse{

@@ -3,13 +3,12 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/julienschmidt/httprouter"
-	"net/http"
 	"tigerhall_kittens/internal/service"
+	"tigerhall_kittens/internal/web"
 )
 
 type UserHandler interface {
-	CreateUser() httprouter.Handle
+	CreateUser(r *web.Request) (*web.JSONResponse, web.ErrorInterface)
 }
 
 type userHandler struct {
@@ -21,23 +20,16 @@ func NewUserHandler() UserHandler {
 }
 
 // CreateUser creates a new user
-func (h *userHandler) CreateUser() httprouter.Handle {
-	return func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-		var user service.CreateUserReq
-		if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
-			http.Error(w, "Failed to decode request body", http.StatusBadRequest)
-			return
-		}
-
-		err := h.userService.CreateUser(r.Context(), user)
-		if err != nil {
-			// TODO: dont generalize the errors to be 400 here
-			http.Error(w, fmt.Sprintf("Error while creating user: %s", err.Error()), http.StatusBadRequest)
-			return
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusCreated)
-		json.NewEncoder(w).Encode(user)
+func (h *userHandler) CreateUser(r *web.Request) (*web.JSONResponse, web.ErrorInterface) {
+	var user service.CreateUserReq
+	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
+		return nil, web.ErrBadRequest("Failed to decode request body")
 	}
+
+	err := h.userService.CreateUser(r.Context(), user)
+	if err != nil {
+		return nil, web.ErrInternalServerError(fmt.Sprintf("error while creating user : %s", err))
+	}
+
+	return &web.JSONResponse{}, nil
 }

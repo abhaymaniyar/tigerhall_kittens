@@ -23,6 +23,7 @@ var Env Config
 type Config struct {
 	Environment            string `mapstructure:"ENV"`
 	Port                   string `mapstructure:"PORT"`
+	SecretKey              string `mapstructure:"SECRET_KEY"`
 	DatabaseHost           string `mapstructure:"DATABASE_HOST"`
 	DatabaseUser           string `mapstructure:"DATABASE_USER"`
 	DatabaseName           string `mapstructure:"DATABASE_NAME"`
