@@ -110,8 +110,7 @@ func E(ctx context.Context, err error, message string, fields ...zapcore.Field) 
 	fields = addFieldsFromContext(ctx, fields...)
 	logger.Error(message, fields...)
 
-	//NotifySentry(ctx, err, message, fields)
-
+	//TODO: add alerts
 }
 
 func Sync() {
