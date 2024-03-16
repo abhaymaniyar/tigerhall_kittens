@@ -7,7 +7,6 @@ package mock_notification_worker
 import (
 	context "context"
 	reflect "reflect"
-	model "tigerhall_kittens/internal/model"
 
 	gomock "github.com/golang/mock/gomock"
 )
@@ -36,15 +35,15 @@ func (m *MockSightingEmailNotifer) EXPECT() *MockSightingEmailNotiferMockRecorde
 }
 
 // ReportSightingToAllUsers mocks base method.
-func (m *MockSightingEmailNotifer) ReportSightingToAllUsers(ctx context.Context, tigerID uint, sightings []model.Sighting) error {
+func (m *MockSightingEmailNotifer) ReportSightingToAllUsers(ctx context.Context, tigerID uint) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ReportSightingToAllUsers", ctx, tigerID, sightings)
+	ret := m.ctrl.Call(m, "ReportSightingToAllUsers", ctx, tigerID)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // ReportSightingToAllUsers indicates an expected call of ReportSightingToAllUsers.
-func (mr *MockSightingEmailNotiferMockRecorder) ReportSightingToAllUsers(ctx, tigerID, sightings interface{}) *gomock.Call {
+func (mr *MockSightingEmailNotiferMockRecorder) ReportSightingToAllUsers(ctx, tigerID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReportSightingToAllUsers", reflect.TypeOf((*MockSightingEmailNotifer)(nil).ReportSightingToAllUsers), ctx, tigerID, sightings)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReportSightingToAllUsers", reflect.TypeOf((*MockSightingEmailNotifer)(nil).ReportSightingToAllUsers), ctx, tigerID)
 }

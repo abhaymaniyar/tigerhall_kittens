@@ -216,7 +216,7 @@ func TestSightingService_ReportSighting(t *testing.T) {
 
 		mockEmailNotifer := mock_notification_worker.NewMockSightingEmailNotifer(ctrl)
 		mockEmailNotifer.EXPECT().
-			ReportSightingToAllUsers(ctx, reportSightingReq.TigerID, existingSightingsForSameTigerInDefaultRange).
+			ReportSightingToAllUsers(ctx, reportSightingReq.TigerID).
 			Return(expectedErr)
 
 		sightingService := NewSightingService(
@@ -251,7 +251,7 @@ func TestSightingService_ReportSighting(t *testing.T) {
 
 		mockEmailNotifer := mock_notification_worker.NewMockSightingEmailNotifer(ctrl)
 		mockEmailNotifer.EXPECT().
-			ReportSightingToAllUsers(ctx, reportSightingReq.TigerID, existingSightingsForSameTigerInDefaultRange).
+			ReportSightingToAllUsers(ctx, reportSightingReq.TigerID).
 			Return(nil)
 
 		sightingService := NewSightingService(
