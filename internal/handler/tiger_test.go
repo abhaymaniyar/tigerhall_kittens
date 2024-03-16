@@ -6,13 +6,15 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/golang/mock/gomock"
-	"github.com/julienschmidt/httprouter"
-	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/golang/mock/gomock"
+	"github.com/julienschmidt/httprouter"
+	"github.com/stretchr/testify/assert"
+
 	"tigerhall_kittens/internal/handler/middleware"
 	"tigerhall_kittens/internal/model"
 	"tigerhall_kittens/internal/repository"

@@ -5,16 +5,17 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/google/uuid"
 	"io/ioutil"
 	"net/http"
 	"runtime/debug"
+	"time"
+
+	"github.com/google/uuid"
+	"github.com/julienschmidt/httprouter"
+
 	"tigerhall_kittens/internal/logger"
 	"tigerhall_kittens/internal/shared"
 	"tigerhall_kittens/internal/web"
-	"time"
-
-	"github.com/julienschmidt/httprouter"
 )
 
 const (

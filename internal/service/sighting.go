@@ -3,12 +3,14 @@ package service
 import (
 	"context"
 	"errors"
+	"time"
+
 	"github.com/google/uuid"
+
 	"tigerhall_kittens/cmd/notification_worker"
 	"tigerhall_kittens/internal/logger"
 	"tigerhall_kittens/internal/model"
 	"tigerhall_kittens/internal/repository"
-	"time"
 )
 
 const DEFAULT_SIGHTING_RANGE_IN_METERS = 5000

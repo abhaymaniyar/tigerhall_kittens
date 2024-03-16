@@ -2,6 +2,7 @@ package routes
 
 import (
 	"github.com/julienschmidt/httprouter"
+
 	"tigerhall_kittens/internal/handler"
 	"tigerhall_kittens/internal/handler/middleware"
 )

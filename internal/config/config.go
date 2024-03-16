@@ -3,11 +3,13 @@ package config
 import (
 	"context"
 	"fmt"
-	"github.com/spf13/viper"
 	"os"
 	"reflect"
 	"strconv"
 	"strings"
+
+	"github.com/spf13/viper"
+
 	"tigerhall_kittens/internal/db"
 	"tigerhall_kittens/internal/logger"
 )

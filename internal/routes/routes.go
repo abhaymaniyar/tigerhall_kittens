@@ -2,8 +2,9 @@ package routes
 
 import (
 	"fmt"
-	"github.com/julienschmidt/httprouter"
 	"net/http"
+
+	"github.com/julienschmidt/httprouter"
 )
 
 func Init(router *httprouter.Router) {

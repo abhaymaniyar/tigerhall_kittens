@@ -2,7 +2,9 @@ package notification_worker
 
 import (
 	"context"
+
 	"github.com/google/uuid"
+
 	"tigerhall_kittens/internal/model"
 	"tigerhall_kittens/internal/repository"
 )

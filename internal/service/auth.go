@@ -3,14 +3,16 @@ package service
 import (
 	"context"
 	"errors"
+	"time"
+
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
+
 	"tigerhall_kittens/internal/config"
 	"tigerhall_kittens/internal/logger"
 	"tigerhall_kittens/internal/repository"
-	"time"
 )
 
 type LoginUserReq struct {

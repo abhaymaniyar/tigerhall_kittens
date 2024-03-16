@@ -3,8 +3,9 @@ package notification_worker
 import (
 	"fmt"
 	"sync"
-	"tigerhall_kittens/internal/logger"
 	"time"
+
+	"tigerhall_kittens/internal/logger"
 )
 
 var (

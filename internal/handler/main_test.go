@@ -2,10 +2,10 @@ package handler
 
 import (
 	"context"
-	"tigerhall_kittens/test_helpers"
-
 	"os"
 	"testing"
+
+	"tigerhall_kittens/test_helpers"
 )
 
 func TestMain(m *testing.M) {

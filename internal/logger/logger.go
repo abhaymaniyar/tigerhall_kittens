@@ -5,10 +5,11 @@ import (
 	"fmt"
 	"os"
 	"path"
-	"tigerhall_kittens/internal/shared"
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+
+	"tigerhall_kittens/internal/shared"
 )
 
 var logger *zap.Logger

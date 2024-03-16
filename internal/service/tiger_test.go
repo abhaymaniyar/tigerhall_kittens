@@ -3,13 +3,15 @@ package service
 import (
 	"context"
 	"errors"
+	"testing"
+	"time"
+
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
-	"testing"
+
 	"tigerhall_kittens/internal/model"
 	"tigerhall_kittens/internal/repository"
 	mock_repository "tigerhall_kittens/internal/repository/mocks"
-	"time"
 )
 
 func TestTigerService_ListTigers(t *testing.T) {

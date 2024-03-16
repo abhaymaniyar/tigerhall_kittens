@@ -3,15 +3,17 @@ package service
 import (
 	"context"
 	"errors"
+	"testing"
+	"time"
+
 	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
-	"testing"
+
 	mock_notification_worker "tigerhall_kittens/cmd/notification_worker/mocks"
 	"tigerhall_kittens/internal/model"
 	"tigerhall_kittens/internal/repository"
 	mock_repository "tigerhall_kittens/internal/repository/mocks"
-	"time"
 )
 
 func TestSightingService_GetSightings(t *testing.T) {

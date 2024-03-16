@@ -2,8 +2,10 @@ package middleware
 
 import (
 	"context"
-	"github.com/golang-jwt/jwt/v5"
 	"strings"
+
+	"github.com/golang-jwt/jwt/v5"
+
 	"tigerhall_kittens/internal/service"
 	"tigerhall_kittens/internal/web"
 )

@@ -6,19 +6,21 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/golang/mock/gomock"
-	"github.com/julienschmidt/httprouter"
-	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
+
+	"github.com/golang/mock/gomock"
+	"github.com/julienschmidt/httprouter"
+	"github.com/stretchr/testify/assert"
+
 	"tigerhall_kittens/internal/handler/middleware"
 	"tigerhall_kittens/internal/model"
 	"tigerhall_kittens/internal/repository"
 	"tigerhall_kittens/internal/service"
 	mock_service "tigerhall_kittens/internal/service/mocks"
-	"time"
 )
 
 func TestSightingHandler_GetSightings(t *testing.T) {

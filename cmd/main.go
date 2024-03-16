@@ -3,10 +3,12 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/julienschmidt/httprouter"
 	"log"
 	"net/http"
 	"runtime/debug"
+
+	"github.com/julienschmidt/httprouter"
+
 	"tigerhall_kittens/cmd/notification_worker"
 	"tigerhall_kittens/internal/config"
 	"tigerhall_kittens/internal/db"
