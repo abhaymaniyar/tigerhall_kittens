@@ -8,26 +8,30 @@ import (
 )
 
 type TigerService interface {
-	CreateTiger(ctx context.Context, tiger *model.Tiger) error
 	ListTigers(ctx context.Context, opts repository.ListTigersOpts) ([]model.Tiger, error)
+	CreateTiger(ctx context.Context, tiger *model.Tiger) error
 }
 
 type tigerService struct {
 	tigerRepo repository.TigerRepo
 }
 
-func NewTigerService() TigerService {
-	return &tigerService{tigerRepo: repository.NewTigerRepo()}
-}
+type TigerServiceOption func(service *tigerService)
 
-func (t *tigerService) CreateTiger(ctx context.Context, tiger *model.Tiger) error {
-	err := t.tigerRepo.SaveTiger(ctx, tiger)
-	if err != nil {
-		logger.E(ctx, err, "Error while saving tiger", logger.Field("tiger_id", tiger.ID))
-		return err
+func NewTigerService(options ...TigerServiceOption) TigerService {
+	service := &tigerService{tigerRepo: repository.NewTigerRepo()}
+
+	for _, option := range options {
+		option(service)
 	}
 
-	return nil
+	return service
+}
+
+func WithTigerRepo(repo repository.TigerRepo) TigerServiceOption {
+	return func(s *tigerService) {
+		s.tigerRepo = repo
+	}
 }
 
 func (t *tigerService) ListTigers(ctx context.Context, opts repository.ListTigersOpts) ([]model.Tiger, error) {
@@ -38,4 +42,14 @@ func (t *tigerService) ListTigers(ctx context.Context, opts repository.ListTiger
 	}
 
 	return tigers, nil
+}
+
+func (t *tigerService) CreateTiger(ctx context.Context, tiger *model.Tiger) error {
+	err := t.tigerRepo.SaveTiger(ctx, tiger)
+	if err != nil {
+		logger.E(ctx, err, "Error while saving tiger", logger.Field("tiger_id", tiger.ID))
+		return err
+	}
+
+	return nil
 }

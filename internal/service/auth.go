@@ -40,10 +40,10 @@ type authService struct {
 }
 
 func NewAuthService() AuthService {
-	return &userService{userRepo: repository.NewUserRepo()}
+	return &authService{userRepo: repository.NewUserRepo()}
 }
 
-func (t *userService) LoginUser(ctx context.Context, req LoginUserReq) (*LoginUserResponse, error) {
+func (t *authService) LoginUser(ctx context.Context, req LoginUserReq) (*LoginUserResponse, error) {
 	user, err := t.userRepo.GetUser(ctx, repository.GetUserOpts{Username: req.Username})
 
 	if errors.Is(err, gorm.ErrRecordNotFound) {

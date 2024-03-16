@@ -31,10 +31,30 @@ type sightingService struct {
 	sightingEmailNotifer notification_worker.SightingEmailNotifer
 }
 
-func NewSightingService() SightingService {
-	return &sightingService{
+type SightingServiceOption func(service *sightingService)
+
+func NewSightingService(options ...SightingServiceOption) SightingService {
+	service := &sightingService{
 		sightingRepo:         repository.NewSightingRepo(),
 		sightingEmailNotifer: notification_worker.NewSightingEmailNotifer(),
+	}
+
+	for _, option := range options {
+		option(service)
+	}
+
+	return service
+}
+
+func WithSightingRepo(repo repository.SightingRepo) SightingServiceOption {
+	return func(s *sightingService) {
+		s.sightingRepo = repo
+	}
+}
+
+func WithsightingEmailNotifer(emailNotifer notification_worker.SightingEmailNotifer) SightingServiceOption {
+	return func(s *sightingService) {
+		s.sightingEmailNotifer = emailNotifer
 	}
 }
 
@@ -52,16 +72,14 @@ func (t *sightingService) ReportSighting(ctx context.Context, reportSightingReq 
 	}
 
 	if sightings != nil && len(sightings) > 0 {
-		logger.I(ctx, "A sighting of the same tiger within 5 kilometers already exists", logger.Field("tiger_id", reportSightingReq.TigerID))
+		logger.I(ctx, "A sighting of the same tiger within range already exists",
+			logger.Field("tiger_id", reportSightingReq.TigerID),
+			logger.Field("range_in_meters", DEFAULT_SIGHTING_RANGE_IN_METERS))
 		return errors.New("sighting already exists in range")
 	}
 
 	sightingTs, err := time.Parse(time.RFC3339, reportSightingReq.Timestamp)
-	userID, parseErr := uuid.Parse(ctx.Value("userID").(string))
-	if parseErr != nil {
-		logger.E(ctx, err, "Error while fetching user id from context")
-		return errors.New("error while fetching user id from context")
-	}
+	userID := ctx.Value("userID").(uuid.UUID)
 
 	sighting := &model.Sighting{
 		TigerID:          reportSightingReq.TigerID,
@@ -80,7 +98,8 @@ func (t *sightingService) ReportSighting(ctx context.Context, reportSightingReq 
 	err = t.sightingEmailNotifer.ReportSightingToAllUsers(ctx, reportSightingReq.TigerID, sightings)
 	if err != nil {
 		logger.E(ctx, err, "Error while sending email notification for sightings", logger.Field("tiger_id", reportSightingReq.TigerID), logger.Field("user_id", userID))
-		return errors.New("error while checking existing sightings")
+		// TODO: should we ignore this error in case of failure in notification?
+		return errors.New("error while sending email notifications about sighting")
 	}
 
 	return nil

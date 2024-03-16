@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"fmt"
 	"gorm.io/gorm"
 	"tigerhall_kittens/internal/db"
 	"tigerhall_kittens/internal/logger"
@@ -39,16 +40,16 @@ func (t *userRepo) CreateUser(ctx context.Context, user *model.User) error {
 func (t *userRepo) GetUser(ctx context.Context, opts GetUserOpts) (*model.User, error) {
 	var user model.User
 
-	conditions := &model.User{}
-	if opts.Email != "" {
-		conditions.Email = opts.Email
-	}
-
+	var condition string
 	if opts.Username != "" {
-		conditions.Username = opts.Username
+		condition = fmt.Sprintf("username = '%s'", opts.Username)
 	}
 
-	err := t.DB.Where(conditions).First(&user).Error
+	if opts.Email != "" {
+		condition = condition + fmt.Sprintf(" or email = '%s'", opts.Email)
+	}
+
+	err := t.DB.Where(condition).First(&user).Error
 	if err != nil {
 		logger.E(ctx, err, "Error while fetching user")
 		return nil, err

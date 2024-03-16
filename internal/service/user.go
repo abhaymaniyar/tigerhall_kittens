@@ -26,20 +26,37 @@ type userService struct {
 	userRepo repository.UserRepo
 }
 
-func NewUserService() UserService {
-	return &userService{userRepo: repository.NewUserRepo()}
+type UserServiceOption func(service *userService)
+
+func NewUserService(options ...UserServiceOption) UserService {
+	service := &userService{userRepo: repository.NewUserRepo()}
+
+	for _, option := range options {
+		option(service)
+	}
+
+	return service
+}
+
+func WithUserRepo(repo repository.UserRepo) UserServiceOption {
+	return func(s *userService) {
+		s.userRepo = repo
+	}
 }
 
 func (t *userService) CreateUser(ctx context.Context, createUserReq CreateUserReq) error {
-	user, err := t.userRepo.GetUser(ctx, repository.GetUserOpts{Email: createUserReq.Email})
+	// TODO: refactor to use FirstOrCreate
+	user, err := t.userRepo.GetUser(ctx, repository.GetUserOpts{Email: createUserReq.Email, Username: createUserReq.Username})
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		logger.W(ctx, "Error while checking existing users", logger.Field("email", createUserReq.Email))
 		return err
 	}
 
 	if user != nil {
-		logger.D(ctx, "User already exists", logger.Field("email", createUserReq.Email))
-		return errors.New("user already exists")
+		logger.D(ctx, "User already exists",
+			logger.Field("email", createUserReq.Email),
+			logger.Field("username", createUserReq.Username))
+		return errors.New("user already exists with same email/username")
 	}
 
 	user = &model.User{
@@ -59,7 +76,7 @@ func (t *userService) CreateUser(ctx context.Context, createUserReq CreateUserRe
 
 	if err := t.userRepo.CreateUser(ctx, user); err != nil {
 		logger.E(ctx, err, "Failed to create user")
-		return err
+		return errors.New("error while creating user")
 	}
 
 	return nil

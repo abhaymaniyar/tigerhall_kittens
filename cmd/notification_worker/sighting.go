@@ -46,7 +46,7 @@ func (e *sightingEmailNotifier) ReportSightingToAllUsers(ctx context.Context, ti
 
 	for _, sighting := range sightings {
 		// skipping notifications to the user who reported the tiger
-		if sighting.ReportedByUserID.String() == reportedByUser.(string) {
+		if sighting.ReportedByUserID == reportedByUser {
 			continue
 		}
 
