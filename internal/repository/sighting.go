@@ -16,6 +16,7 @@ type GetSightingOpts struct {
 	RangeInMeters uint
 	Limit         int
 	Offset        int
+	ExcludeUserID string
 }
 
 type SightingRepo interface {
@@ -40,6 +41,9 @@ func (t *sightingRepo) GetSightings(ctx context.Context, opts GetSightingOpts) (
 	}
 
 	query = query.Where("tiger_id = ?", opts.TigerID)
+	if opts.ExcludeUserID != "" {
+		query = query.Where("reported_by_user_id != ?", opts.ExcludeUserID)
+	}
 
 	if opts.RangeInMeters != 0 {
 		query = query.Where("st_distancesphere(st_makepoint(lat, lon), st_makepoint(?, ?)) < ?", opts.Lat, opts.Lon, opts.RangeInMeters)

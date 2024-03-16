@@ -48,7 +48,8 @@ func (e *sightingEmailNotifier) ReportSightingToAllUsers(ctx context.Context, ti
 	}
 
 	sightings, err := e.sightingRepo.GetSightings(ctx, repository.GetSightingOpts{
-		TigerID: tigerID,
+		TigerID:       tigerID,
+		ExcludeUserID: reportedByUser.(string),
 	})
 
 	if err != nil {
@@ -57,11 +58,6 @@ func (e *sightingEmailNotifier) ReportSightingToAllUsers(ctx context.Context, ti
 	}
 
 	for _, sighting := range sightings {
-		// skipping notifications to the user who reported the tiger
-		if sighting.ReportedByUserID.String() == reportedByUser {
-			continue
-		}
-
 		wg.Add(1)
 		sighting := sighting
 		go func() {

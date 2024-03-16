@@ -13,7 +13,6 @@ CREATE TABLE tigers
     deleted_at          TIMESTAMP WITH TIME ZONE DEFAULT NULL
 );
 
-CREATE INDEX idx_tigers_name ON tigers (name);
 CREATE INDEX idx_tigers_last_seen_lat ON tigers (last_seen_lat);
 CREATE INDEX idx_tigers_last_seen_lon ON tigers (last_seen_lon);
 
