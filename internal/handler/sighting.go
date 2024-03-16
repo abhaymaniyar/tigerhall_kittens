@@ -7,7 +7,6 @@ import (
 	"tigerhall_kittens/internal/repository"
 	"tigerhall_kittens/internal/service"
 	"tigerhall_kittens/internal/web"
-	"tigerhall_kittens/utils"
 )
 
 type SightingHandler interface {
@@ -23,9 +22,12 @@ func NewSightingHandler() SightingHandler {
 	return &sightingHandler{sightingService: service.NewSightingService()}
 }
 
+func MakeSightingHandler(sightingService service.SightingService) SightingHandler {
+	return &sightingHandler{sightingService: sightingService}
+}
+
 // ReportSighting creates a new user
 func (h *sightingHandler) ReportSighting(r *web.Request) (*web.JSONResponse, web.ErrorInterface) {
-
 	var req service.ReportSightingReq
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		return nil, web.ErrBadRequest("Failed to decode request body")
@@ -34,15 +36,10 @@ func (h *sightingHandler) ReportSighting(r *web.Request) (*web.JSONResponse, web
 	err := h.sightingService.ReportSighting(r.Context(), req)
 	if err != nil {
 		//TODO: fix this to return 400 in case of already existing sighting
-		return nil, web.ErrInternalServerError(fmt.Sprintf("Error while creating req: %s", err.Error()))
+		return nil, web.ErrInternalServerError(fmt.Sprintf("Error while reporting sighting : %s", err.Error()))
 	}
 
-	jsonResponse, err := utils.StructToMap(req)
-	if err != nil {
-		return nil, web.ErrInternalServerError(err.Error())
-	}
-
-	return (*web.JSONResponse)(&jsonResponse), nil
+	return &web.JSONResponse{}, nil
 }
 
 func (h *sightingHandler) GetSightings(r *web.Request) (*web.JSONResponse, web.ErrorInterface) {

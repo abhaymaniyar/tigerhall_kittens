@@ -19,7 +19,7 @@ type CreateUserReq struct {
 }
 
 type UserService interface {
-	CreateUser(ctx context.Context, user CreateUserReq) error
+	CreateUser(ctx context.Context, user *CreateUserReq) error
 }
 
 type userService struct {
@@ -44,7 +44,7 @@ func WithUserRepo(repo repository.UserRepo) UserServiceOption {
 	}
 }
 
-func (t *userService) CreateUser(ctx context.Context, createUserReq CreateUserReq) error {
+func (t *userService) CreateUser(ctx context.Context, createUserReq *CreateUserReq) error {
 	// TODO: refactor to use FirstOrCreate
 	user, err := t.userRepo.GetUser(ctx, repository.GetUserOpts{Email: createUserReq.Email, Username: createUserReq.Username})
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {

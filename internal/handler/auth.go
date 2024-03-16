@@ -20,17 +20,21 @@ func NewAuthHandler() AuthHandler {
 	return &authHandler{authService: service.NewAuthService()}
 }
 
+func MakeAuthHandler(authService service.AuthService) AuthHandler {
+	return &authHandler{authService: authService}
+}
+
 // Login creates a new user
 func (h *authHandler) Login(r *web.Request) (*web.JSONResponse, web.ErrorInterface) {
-	var user service.LoginUserReq
-	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
+	var req service.LoginUserReq
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		return nil, web.ErrBadRequest("Failed to decode request body")
 	}
 
-	loginResp, err := h.authService.LoginUser(r.Context(), user)
+	loginResp, err := h.authService.LoginUser(r.Context(), req)
 	if err != nil {
 		// TODO: dont generalize the errors to be 400 here
-		return nil, web.ErrInternalServerError(fmt.Sprintf("Error while logging in user : %s", err.Error()))
+		return nil, web.ErrInternalServerError(fmt.Sprintf("Error while logging in req : %s", err.Error()))
 	}
 
 	jsonResponse, err := utils.StructToMap(loginResp)

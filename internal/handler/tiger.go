@@ -8,7 +8,6 @@ import (
 	"tigerhall_kittens/internal/repository"
 	"tigerhall_kittens/internal/service"
 	"tigerhall_kittens/internal/web"
-	"tigerhall_kittens/utils"
 )
 
 type TigerHandler interface {
@@ -24,6 +23,10 @@ func NewTigerHandler() TigerHandler {
 	return &tigerHandler{tigerService: service.NewTigerService()}
 }
 
+func MakeTigerHandler(tigerService service.TigerService) TigerHandler {
+	return &tigerHandler{tigerService: tigerService}
+}
+
 func (t *tigerHandler) CreateTiger(r *web.Request) (*web.JSONResponse, web.ErrorInterface) {
 	var tiger model.Tiger
 	if err := json.NewDecoder(r.Body).Decode(&tiger); err != nil {
@@ -35,12 +38,13 @@ func (t *tigerHandler) CreateTiger(r *web.Request) (*web.JSONResponse, web.Error
 		return nil, web.ErrInternalServerError(fmt.Sprintf("error while saving tiger : %s", err))
 	}
 
-	jsonResponse, err := utils.StructToMap(tiger)
-	if err != nil {
-		return nil, web.ErrInternalServerError(err.Error())
-	}
+	//jsonResponse, err := utils.StructToMap(tiger)
+	//if err != nil {
+	//	return nil, web.ErrInternalServerError(err.Error())
+	//}
 
-	return (*web.JSONResponse)(&jsonResponse), nil
+	//return (*web.JSONResponse)(&jsonResponse), nil
+	return &web.JSONResponse{}, nil
 }
 
 func (t *tigerHandler) ListTigers(r *web.Request) (*web.JSONResponse, web.ErrorInterface) {
