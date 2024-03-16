@@ -2,10 +2,11 @@ package notification_worker
 
 import (
 	"context"
+	"errors"
+	"tigerhall_kittens/internal/logger"
 
 	"github.com/google/uuid"
 
-	"tigerhall_kittens/internal/model"
 	"tigerhall_kittens/internal/repository"
 )
 
@@ -14,7 +15,7 @@ type sightingEmailNotifier struct {
 }
 
 type SightingEmailNotifer interface {
-	ReportSightingToAllUsers(ctx context.Context, tigerID uint, sightings []model.Sighting) error
+	ReportSightingToAllUsers(ctx context.Context, tigerID uint) error
 }
 
 func NewSightingEmailNotifer() SightingEmailNotifer {
@@ -39,16 +40,25 @@ type TigerSightingEmail struct {
 }
 
 // ReportSightingToAllUsers simulates reporting a tiger sighting and sends a notification email
-func (e *sightingEmailNotifier) ReportSightingToAllUsers(ctx context.Context, tigerID uint, sightings []model.Sighting) error {
+func (e *sightingEmailNotifier) ReportSightingToAllUsers(ctx context.Context, tigerID uint) error {
 	reportedByUser := ctx.Value("userID")
 
 	tigerSightingEmail := TigerSightingEmail{
 		TigerID: tigerID,
 	}
 
+	sightings, err := e.sightingRepo.GetSightings(ctx, repository.GetSightingOpts{
+		TigerID: tigerID,
+	})
+
+	if err != nil {
+		logger.E(ctx, err, "Error while fetching existing sightings for the tiger", logger.Field("tiger_id", tigerID))
+		return errors.New("error while fetching existing sightings")
+	}
+
 	for _, sighting := range sightings {
 		// skipping notifications to the user who reported the tiger
-		if sighting.ReportedByUserID == reportedByUser {
+		if sighting.ReportedByUserID.String() == reportedByUser {
 			continue
 		}
 
