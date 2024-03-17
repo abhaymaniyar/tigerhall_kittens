@@ -64,3 +64,13 @@ https://api.postman.com/collections/3144528-69009c19-e07f-4d08-b5bc-3981e8ceeb36
 - Viper - Configuration management
 - jwt-go - JWT implementation for Go
 
+### Key elements
+
+- Logging and error alerts
+- Unit test cases with average coverage over 85%
+- DB migrations with goose
+- Config management with Viper
+- Access token generation with jwt-go
+- Email notification worker using go channels
+- Possible middleware chaining
+- Request tracking using context
