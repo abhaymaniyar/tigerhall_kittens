@@ -15,15 +15,30 @@ What things you need to install the software and how to install them:
 - Go (version 1.18 or later)
 - PostgreSQL (or any preferred database, adjust accordingly)
 
-### Installing
+## Deployment
 
 A step by step series of examples that tell you how to get a development environment running:
 
-Clone the repository:
+1. Clone the repository:
 
 ```sh
 git clone https://github.com/yourusername/tigerhall-kittens.git
 ```
+
+2. Create a dev environment file from the sample file
+
+ ```sh
+ $cp env.sample development.env
+ ```
+
+3. Modify the values in `development.env` to match your needs.
+
+```sh
+./run-server.sh [env-file]
+```
+
+This command will load environment variables of the specified env file and run the server on the port specified in the
+env variables file.
 
 ### Running Tests
 
@@ -32,23 +47,6 @@ To run the unit tests for the project, use the following command:
 ```sh
 go test ./...
 ```
-
-## Deployment
-
-1. Create a dev environment file from the sample file
-
- ```sh
- $cp env.sample development.env
- ```
-
-2. Modify the values in `development.env` to match your needs.
-
-```sh
-./run-server.sh [env-file]
-```
-
-This command will load environment variables of the specified env file and run the server on the port specified in the
-env variables file.
 
 ### Detailed API Spec with sample responses
 
