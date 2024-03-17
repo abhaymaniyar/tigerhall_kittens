@@ -13,7 +13,6 @@ purposes. See deployment for notes on how to deploy the project on a live system
 What things you need to install the software and how to install them:
 
 - Go (version 1.18 or later)
-- Docker (optional for containerization)
 - PostgreSQL (or any preferred database, adjust accordingly)
 
 ### Installing
@@ -32,64 +31,36 @@ To run the unit tests for the project, use the following command:
 go test ./...
 ```
 
-For integration tests, ensure your test database is correctly set up and use:
-
-```sh
-go test -tags=integration ./...
-```
-
 ## Deployment
 
-To deploy this project on a live system, consider containerizing it with Docker:
+1. Create a dev environment file from the sample file
 
-1. Build the Docker image:
+ ```sh
+ $cp env.sample development.env
+ ```
 
-```sh
-docker build -t tigerhall-kittens .
-```
-
-2. Run the Docker container:
+2. Modify the values in `development.env` to match your needs.
 
 ```sh
-docker run -p 8080:8080 tigerhall-kittens
+./run-server.sh [env-file]
 ```
 
-Adjust the port mappings and any other configurations as necessary.
+This command will load environment variables of the specified env file and run the server on the port specified in the
+env variables file.
 
-## API Contracts
+### Detailed API Spec with sample responses
 
-### User Endpoints
+https://documenter.getpostman.com/view/3144528/2sA2xnxVD2
 
-- POST **/users**: Create a new user
-    - Request body:
-        ```json
-        {
-          "username": "johndoe",
-          "password": "securepassword",
-          "email": "johndoe@example.com"
-        }
+### Postman Collection
 
-- POST **/login**: Authenticate a user
-
-  Request body:
-    ``` json
-    {
-      "username": "johndoe",
-      "password": "securepassword"
-    }
-
-#### Tiger and Sighting Endpoints
-
-- POST /tigers: Add a new tiger
-- GET /tigers: List all tigers with pagination
-- POST /sightings: Report a new sighting
-- GET /tigers/{id}/sightings: List all sightings for a tiger
-
-Please refer to the `api_docs.md` for detailed request and response structures.
+https://api.postman.com/collections/3144528-69009c19-e07f-4d08-b5bc-3981e8ceeb36?access_key=PMAT-01HS4YCA9CSY9J19XF7PF8G6B2
 
 ### Built With
 
 - Gin - The web framework used
 - GORM - ORM library for Go
+- Goose - DB migration library
 - Viper - Configuration management
 - jwt-go - JWT implementation for Go
+

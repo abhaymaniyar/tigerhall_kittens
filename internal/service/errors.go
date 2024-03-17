@@ -3,7 +3,7 @@ package service
 import "errors"
 
 var (
-	ErrTigerDoesNotExist    = errors.New("error while fetching tiger details")
+	ErrTigerDoesNotExist    = errors.New("tiger does not exist")
 	ErrFetchingTigerDetails = errors.New("unable to fetch tiger details")
 
 	ErrFetchingExistingSightings = errors.New("unable to check existing sightings")

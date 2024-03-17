@@ -9,7 +9,7 @@ import (
 
 func errorResponse(err error) web.ErrorInterface {
 	if errors.Is(err, service.ErrTigerDoesNotExist) {
-		return web.ErrBadRequest(err.Error())
+		return web.ErrBadRequest(fmt.Sprintf("error fetching tiger details : %s", err.Error()))
 	}
 
 	if errors.Is(err, service.ErrFetchingTigerDetails) {
