@@ -67,6 +67,9 @@ https://api.postman.com/collections/3144528-69009c19-e07f-4d08-b5bc-3981e8ceeb36
 ### Key elements
 
 - Logging and error alerts
+- Pagination support for get requests
+- Standardised request response formats
+- Thorough API contract doc with sample responses
 - Unit test cases with average coverage over 85%
 - DB migrations with goose
 - Config management with Viper
