@@ -56,15 +56,14 @@ func (e *sightingEmailNotifier) ReportSightingToAllUsers(ctx context.Context, ti
 		logger.E(ctx, err, "Error while fetching existing sightings for the tiger", logger.Field("tiger_id", tigerID))
 		return errors.New("error while fetching existing sightings")
 	}
-
-	for _, sighting := range sightings {
-		wg.Add(1)
-		sighting := sighting
-		go func() {
-			defer wg.Done()
+	
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		for _, sighting := range sightings {
 			e.Process(sighting.ReportedByUserID, tigerSightingEmail)
-		}()
-	}
+		}
+	}()
 
 	return nil
 }

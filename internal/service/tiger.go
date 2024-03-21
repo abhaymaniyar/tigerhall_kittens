@@ -11,6 +11,7 @@ type TigerService interface {
 	GetTiger(ctx context.Context, opts repository.GetTigerOpts) (*model.Tiger, error)
 	ListTigers(ctx context.Context, opts repository.ListTigersOpts) ([]model.Tiger, error)
 	CreateTiger(ctx context.Context, tiger *model.Tiger) error
+	UpdateTigerDetails(ctx context.Context, tiger *model.Tiger) error
 }
 
 type tigerService struct {
@@ -59,6 +60,16 @@ func (t *tigerService) CreateTiger(ctx context.Context, tiger *model.Tiger) erro
 	err := t.tigerRepo.SaveTiger(ctx, tiger)
 	if err != nil {
 		logger.E(ctx, err, "Error while saving tiger", logger.Field("tiger_id", tiger.ID))
+		return err
+	}
+
+	return nil
+}
+
+func (t *tigerService) UpdateTigerDetails(ctx context.Context, tiger *model.Tiger) error {
+	err := t.tigerRepo.UpdateTiger(ctx, tiger)
+	if err != nil {
+		logger.E(ctx, err, "Error while updating tiger", logger.Field("tiger_id", tiger.ID))
 		return err
 	}
 

@@ -3,12 +3,10 @@ package config
 import (
 	"context"
 	"fmt"
+	"github.com/spf13/viper"
 	"os"
 	"reflect"
 	"strconv"
-	"strings"
-
-	"github.com/spf13/viper"
 
 	"tigerhall_kittens/internal/db"
 	"tigerhall_kittens/internal/logger"
@@ -35,22 +33,20 @@ type Config struct {
 	DatabaseMaxConnections string `mapstructure:"DB_MAX_CONNECTIONS"`
 }
 
-func bindEnvs(iface interface{}, parts ...string) {
-	ifv := reflect.ValueOf(iface)
+func bindEnvs(iface interface{}) {
 	ift := reflect.TypeOf(iface)
 
 	for i := 0; i < ift.NumField(); i++ {
-		v := ifv.Field(i)
 		t := ift.Field(i)
 		tv, ok := t.Tag.Lookup("mapstructure")
 		if !ok {
 			continue
 		}
-		switch v.Kind() {
-		case reflect.Struct:
-			bindEnvs(v.Interface(), append(parts, tv)...)
-		default:
-			viper.BindEnv(strings.Join(append(parts, tv), "."))
+
+		err := viper.BindEnv(tv)
+		if err != nil {
+			logger.E(context.Background(), err, "unable to parse env variables", logger.Field("field", t))
+			panic(err)
 		}
 	}
 }

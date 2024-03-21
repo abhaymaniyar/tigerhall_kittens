@@ -111,6 +111,17 @@ func (t *sightingService) ReportSighting(ctx context.Context, reportSightingReq 
 		return err
 	}
 
+	if err := t.tigerService.UpdateTigerDetails(ctx, &model.Tiger{
+		ID:                reportSightingReq.TigerID,
+		LastSeenLat:       reportSightingReq.Lat,
+		LastSeenLon:       reportSightingReq.Lon,
+		LastSeenTimestamp: sightingTs,
+		UpdatedAt:         time.Now(),
+	}); err != nil {
+		logger.E(ctx, err, "Failed to update tiger details")
+		return err
+	}
+
 	err = t.sightingEmailNotifer.ReportSightingToAllUsers(ctx, reportSightingReq.TigerID)
 	if err != nil {
 		logger.E(ctx, err, "Error while sending email notification for sightings", logger.Field("tiger_id", reportSightingReq.TigerID), logger.Field("user_id", userID))

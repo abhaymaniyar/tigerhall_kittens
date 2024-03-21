@@ -39,12 +39,6 @@ func (t *tigerHandler) CreateTiger(r *web.Request) (*web.JSONResponse, web.Error
 		return nil, web.ErrInternalServerError(fmt.Sprintf("error while saving tiger : %s", err))
 	}
 
-	//jsonResponse, err := utils.StructToMap(tiger)
-	//if err != nil {
-	//	return nil, web.ErrInternalServerError(err.Error())
-	//}
-
-	//return (*web.JSONResponse)(&jsonResponse), nil
 	return &web.JSONResponse{}, nil
 }
 

@@ -22,6 +22,7 @@ type TigerRepo interface {
 	SaveTiger(ctx context.Context, tiger *model.Tiger) error
 	GetTiger(ctx context.Context, opts GetTigerOpts) (*model.Tiger, error)
 	GetTigers(ctx context.Context, opts ListTigersOpts) ([]model.Tiger, error)
+	UpdateTiger(ctx context.Context, tiger *model.Tiger) error
 }
 
 type tigerRepo struct {
@@ -35,7 +36,7 @@ func NewTigerRepo() TigerRepo {
 func (t *tigerRepo) SaveTiger(ctx context.Context, tiger *model.Tiger) error {
 	err := t.DB.Create(tiger).Error
 	if err != nil {
-		logger.E(ctx, err, "Error while saving user")
+		logger.E(ctx, err, "Error while saving tiger")
 		return err
 	}
 
@@ -64,4 +65,14 @@ func (t *tigerRepo) GetTigers(ctx context.Context, opts ListTigersOpts) ([]model
 	}
 
 	return tigers, nil
+}
+
+func (t *tigerRepo) UpdateTiger(ctx context.Context, tiger *model.Tiger) error {
+	err := t.DB.Updates(tiger).Error
+	if err != nil {
+		logger.E(ctx, err, "Error while updating tiger")
+		return err
+	}
+
+	return nil
 }
