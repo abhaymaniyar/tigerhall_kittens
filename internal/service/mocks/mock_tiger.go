@@ -79,3 +79,17 @@ func (mr *MockTigerServiceMockRecorder) ListTigers(ctx, opts interface{}) *gomoc
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTigers", reflect.TypeOf((*MockTigerService)(nil).ListTigers), ctx, opts)
 }
+
+// UpdateTigerDetails mocks base method.
+func (m *MockTigerService) UpdateTigerDetails(ctx context.Context, tiger *model.Tiger) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateTigerDetails", ctx, tiger)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateTigerDetails indicates an expected call of UpdateTigerDetails.
+func (mr *MockTigerServiceMockRecorder) UpdateTigerDetails(ctx, tiger interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateTigerDetails", reflect.TypeOf((*MockTigerService)(nil).UpdateTigerDetails), ctx, tiger)
+}
